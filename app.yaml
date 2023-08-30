@@ -1,0 +1,13 @@
+# How to deploy:
+# gcloud app deploy app.yaml
+
+service: admindashboard
+runtime: nodejs16
+
+# Force https and redirect http to https
+handlers:
+  - url: /.*
+    secure: always
+    redirect_http_response_code: 301
+    script: auto
+

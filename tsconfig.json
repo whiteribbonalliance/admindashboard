@@ -1,0 +1,90 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "baseUrl": "src",
+    "paths": {
+      "@components/*": [
+        "components/*"
+      ],
+      "@page-components/*": [
+        "page-components/*"
+      ],
+      "@enums": [
+        "enums"
+      ],
+      "@styles/*": [
+        "styles/*"
+      ],
+      "@constants": [
+        "constants"
+      ],
+      "@contexts/*": [
+        "contexts/*"
+      ],
+      "@interfaces": [
+        "interfaces"
+      ],
+      "@types": [
+        "types"
+      ],
+      "@configurations": [
+        "configurations"
+      ],
+      "@graph-components/*": [
+        "graph-components/*"
+      ],
+      "@services/*": [
+        "services/*"
+      ],
+      "@utils": [
+        "utils"
+      ],
+      "@hooks/*": [
+        "hooks/*"
+      ],
+      "@stores/*": [
+        "stores/*"
+      ],
+      "@providers/*": [
+        "providers/*"
+      ],
+      "@schemas/*": [
+        "schemas/*"
+      ],
+      "@app/*": [
+        "app/*"
+      ]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
