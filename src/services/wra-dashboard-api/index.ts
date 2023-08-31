@@ -74,3 +74,41 @@ export async function getCampaignDownloadUrl(campaignCode: TCampaignCode, dateFi
 
     return data
 }
+
+/**
+ * Get campaign countries breakdown
+ *
+ * @param campaignCode The campaign code
+ */
+export async function getCampaignCountriesBreakdown(campaignCode: TCampaignCode) {
+    const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/countries-breakdown`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
+        credentials: 'include',
+    })
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch campaign countries breakdown')
+    }
+
+    return response.url
+}
+
+/**
+ * Get campaign source files breakdown
+ *
+ * @param campaignCode The campaign code
+ */
+export async function getCampaignSourceFilesBreakdown(campaignCode: TCampaignCode) {
+    const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/source-files-breakdown`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
+        credentials: 'include',
+    })
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch campaign source files breakdown')
+    }
+
+    return response.url
+}
