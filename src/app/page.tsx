@@ -1,3 +1,5 @@
-export default function Home() {
-    return <div></div>
+import { Dashboard } from '@page-components/Dashboard'
+
+export default () => {
+    return <Dashboard />
 }

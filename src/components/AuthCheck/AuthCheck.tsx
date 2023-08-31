@@ -4,12 +4,13 @@ import { ReactNode, useEffect, useState } from 'react'
 import { check, logoutUser } from '@services/wra-dashboard-api'
 import { usePathname, useRouter } from 'next/navigation'
 import { useUserStore } from '@stores/user'
+import { Path } from '@enums'
 
 interface IAuthProps {
     children: ReactNode
 }
 
-const publicPaths = ['/login']
+const publicPaths = [Path.LOGIN as string]
 
 export const AuthCheck = ({ children }: IAuthProps) => {
     const user = useUserStore((state) => state.user)
@@ -56,8 +57,7 @@ export const AuthCheck = ({ children }: IAuthProps) => {
     // Not logged in & auth check failed
     if (!user && !authCheckSuccess) {
         if (!publicPaths.includes(pathname)) {
-            router.push('/login')
-            return <Loading />
+            return router.push(Path.LOGIN)
         }
         return <div>{children}</div>
     }
@@ -65,8 +65,7 @@ export const AuthCheck = ({ children }: IAuthProps) => {
     // Logged in & auth check success
     if (user && authCheckSuccess) {
         if (publicPaths.includes(pathname)) {
-            router.push('/dashboard')
-            return <Loading />
+            return router.push(Path.DASHBOARD)
         }
         return <div>{children}</div>
     }

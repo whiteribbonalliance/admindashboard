@@ -1,8 +1,8 @@
 import { IConfiguration } from '@interfaces'
-import { DashboardName } from '@enums'
+import { CampaignCode } from '@enums'
 
 export const configuration: IConfiguration = {
-    id: DashboardName.HEALTHWELLBEING,
+    id: CampaignCode.HEALTHWELLBEING,
     campaignCode: 'healthwellbeing',
     title: 'What women want for health and wellbeing',
 }

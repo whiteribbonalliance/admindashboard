@@ -1,4 +1,5 @@
-import { ICampaignDownloadUrl, IConfiguration, IDateFilter, IUser } from '@interfaces'
+import { ICampaignDownloadUrl, IDateFilter, IUser } from '@interfaces'
+import { TCampaignCode } from '@types'
 
 const apiUrl = process.env.NEXT_PUBLIC_WRA_DASHBOARD_API_URL as string
 
@@ -54,11 +55,11 @@ export async function check() {
 /**
  * Get campaign download url
  *
- * @param config The campaign configuration
+ * @param campaignCode The campaign code
  * @param dateFilter The date filter
  */
-export async function getCampaignDownloadUrl(config: IConfiguration, dateFilter: IDateFilter) {
-    const response = await fetch(`${apiUrl}/campaigns/${config.campaignCode}/download-url`, {
+export async function getCampaignDownloadUrl(campaignCode: TCampaignCode, dateFilter: IDateFilter | {}) {
+    const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/download-url`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

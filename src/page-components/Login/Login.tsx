@@ -10,6 +10,7 @@ import { loginUser } from '@services/wra-dashboard-api'
 import { useRouter } from 'next/navigation'
 import { useUserStore } from '@stores/user'
 import { useState } from 'react'
+import { Path } from '@enums'
 
 interface IInputProps {
     id: string
@@ -41,7 +42,7 @@ export const Login = () => {
             const user = await loginUser(formData)
             setUser(user)
             setLoginError('')
-            router.push('/dashboard')
+            router.push(Path.DASHBOARD)
         } catch (error) {
             setLoginError('Login failed')
         }
@@ -52,10 +53,10 @@ export const Login = () => {
             <div className="w-full max-w-md">
                 <Box>
                     <div>
-                        <h1 className="mb-5 text-center text-2xl">Login</h1>
+                        <h1 className="mb-3 text-center text-2xl">Login</h1>
                         {/* Login form */}
                         <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
-                            <p className="my-3 text-sm text-red-400">{loginError && loginError}</p>
+                            <p className="mb-3 text-sm text-red-400">{loginError && loginError}</p>
                             <div className="mb-1">
                                 <InputUsername id="input-login" control={control} />
                                 <p className="mt-1 text-sm text-red-400">{errors.username?.message}</p>
