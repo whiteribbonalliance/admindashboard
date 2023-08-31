@@ -22,7 +22,7 @@ interface ITabContentProps {
     setNoDataFound: Dispatch<boolean>
 }
 
-interface ICampaignDownloaderProps {
+interface IDownloaderProps {
     campaignCode: TCampaignCode
 }
 
@@ -38,7 +38,7 @@ export const Dashboard = () => {
                 <div className="flex w-full flex-col items-center gap-y-10">
                     {campaignCodes.length > 0 &&
                         campaignCodes.map((campaignCode) => {
-                            return <CampaignDownloader key={campaignCode} campaignCode={campaignCode} />
+                            return <Downloader key={campaignCode} campaignCode={campaignCode} />
                         })}
                 </div>
             </div>
@@ -46,12 +46,11 @@ export const Dashboard = () => {
     )
 }
 
-const CampaignDownloader = ({ campaignCode }: ICampaignDownloaderProps) => {
+const Downloader = ({ campaignCode }: IDownloaderProps) => {
     const [downloadFunction, setDownloadFunction] = useState<TDownloadFunction | undefined>(undefined)
     const [isGeneratingData, setIsGeneratingData] = useState<boolean>(false)
     const [noDataFound, setNoDataFound] = useState<boolean>(false)
     const campaignConfig = getCampaignConfig(campaignCode)
-    if (!campaignConfig) return null
 
     // Tabs
     const tabs = [
@@ -62,7 +61,7 @@ const CampaignDownloader = ({ campaignCode }: ICampaignDownloaderProps) => {
         },
         {
             id: 'country-breakdown',
-            title: 'Country breakdown',
+            title: 'Countries breakdown',
             TabContent: DownloadCountriesBreakdown,
         },
         {

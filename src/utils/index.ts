@@ -37,7 +37,5 @@ export function getCampaignConfig(campaignCode: TCampaignCode) {
             return economicEmpowermentMexicoConfig
         case CampaignCode.WHAT_WOMEN_WANT_PAKISTAN:
             return whatWomenWantPakistanConfig
-        default:
-            return null
     }
 }

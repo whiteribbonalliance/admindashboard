@@ -16,6 +16,7 @@ export const AuthCheck = ({ children }: IAuthProps) => {
     const user = useUserStore((state) => state.user)
     const setUser = useUserStore((state) => state.setUser)
     const [authCheckSuccess, setAuthCheckSuccess] = useState<boolean | undefined>(undefined)
+    const [showPageContent, setShowPageContent] = useState<boolean>(false)
     const pathname = usePathname()
     const router = useRouter()
 
@@ -44,35 +45,40 @@ export const AuthCheck = ({ children }: IAuthProps) => {
         }
     }
 
+    // Auth check
     useEffect(() => {
         setAuthCheckSuccess(undefined)
         doAuthCheck().then()
     }, [pathname])
 
-    // Auth check in progress
-    if (authCheckSuccess === undefined) {
-        return <Loading />
-    }
+    // Check if page content can be shown
+    useEffect(() => {
+        setShowPageContent(false)
 
-    // Not logged in & auth check failed
-    if (!user && !authCheckSuccess) {
-        if (!publicPaths.includes(pathname)) {
-            return router.push(Path.LOGIN)
+        // Not logged in & auth check failed
+        if (!user && authCheckSuccess === false) {
+            if (!publicPaths.includes(pathname)) {
+                router.push(Path.LOGIN)
+                setShowPageContent(false)
+            } else {
+                setShowPageContent(true)
+            }
         }
-        return <div>{children}</div>
-    }
 
-    // Logged in & auth check success
-    if (user && authCheckSuccess) {
-        if (publicPaths.includes(pathname)) {
-            return router.push(Path.DASHBOARD)
+        // Logged in & auth check success
+        else if (user && authCheckSuccess === true) {
+            if (publicPaths.includes(pathname)) {
+                router.push(Path.DASHBOARD)
+                setShowPageContent(false)
+            } else {
+                setShowPageContent(true)
+            }
         }
+    }, [user, authCheckSuccess, setShowPageContent, router, pathname])
+
+    if (showPageContent) {
         return <div>{children}</div>
+    } else {
+        return <div className="m-5 flex justify-center">Loading...</div>
     }
-
-    return <Loading />
-}
-
-const Loading = () => {
-    return <div className="m-5 flex justify-center">Loading...</div>
 }
