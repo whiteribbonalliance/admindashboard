@@ -1,4 +1,4 @@
-import { CampaignCode } from '@enums'
+import {CampaignCode} from '@enums'
 import {
     economicEmpowermentMexicoConfig,
     healthwellbeingConfig,
@@ -7,7 +7,7 @@ import {
     whatWomenWantPakistanConfig,
     whatYoungPeopleWantConfig,
 } from '@configurations'
-import { TCampaignCode } from '@types'
+import {TCampaignCode} from '@types'
 
 /**
  * Merge Tailwind CSS classes
@@ -38,4 +38,32 @@ export function getCampaignConfig(campaignCode: TCampaignCode) {
         case CampaignCode.WHAT_WOMEN_WANT_PAKISTAN:
             return whatWomenWantPakistanConfig
     }
+}
+
+/**
+ * Get file name from header
+ *
+ * @param headers Headers
+ */
+export function getFileNameFromHeaders(headers: Headers) {
+    const contentDisposition = headers.get('content-disposition')
+    let filename = 'file.xlsx'
+    if (contentDisposition) {
+        filename = contentDisposition.split('filename=')[1]
+    }
+
+    return filename
+}
+
+/**
+ * Download blob
+ *
+ * @param blob The Blob
+ * @param filename The filename
+ */
+export function downloadBlob(blob: Blob, filename: string) {
+    const file = new File([blob], filename)
+    const url = URL.createObjectURL(file)
+    window.open(url, '_blank')
+    URL.revokeObjectURL(url)
 }

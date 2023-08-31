@@ -7,9 +7,9 @@ import { Button } from '@components/Button'
 import { TCampaignCode } from '@types'
 import React, { Dispatch, useEffect, useState } from 'react'
 import {
-    getCampaignCountriesBreakdownUrl,
-    getCampaignDataUrl,
-    getCampaignSourceFilesBreakdownUrl,
+    downloadCampaignCountriesBreakdown,
+    downloadCampaignData,
+    downloadCampaignSourceFilesBreakdown,
 } from '@services/wra-dashboard-api'
 import { IDateFilter } from '@interfaces'
 import { Tab } from '@headlessui/react'
@@ -149,17 +149,11 @@ const DownloadCampaignData = ({
     // Download function
     const download: TDownloadFunction = async () => {
         try {
+            // Get url
             setIsGeneratingData(true)
             setNoDataFound(false)
-            const url = await getCampaignDataUrl(campaignCode, dateFilter)
+            await downloadCampaignData(campaignCode, dateFilter)
             setIsGeneratingData(false)
-
-            // Download
-            const linkEl = document.createElement('a')
-            linkEl.href = url
-            document.body.appendChild(linkEl)
-            linkEl.click()
-            document.body.removeChild(linkEl)
         } catch (error) {
             setIsGeneratingData(false)
             setNoDataFound(true)
@@ -214,17 +208,11 @@ const DownloadCountriesBreakdown = ({
     // Download function
     const download: TDownloadFunction = async () => {
         try {
+            // Get url
             setIsGeneratingData(true)
             setNoDataFound(false)
-            const url = await getCampaignCountriesBreakdownUrl(campaignCode)
+            await downloadCampaignCountriesBreakdown(campaignCode)
             setIsGeneratingData(false)
-
-            // Download
-            const linkEl = document.createElement('a')
-            linkEl.href = url
-            document.body.appendChild(linkEl)
-            linkEl.click()
-            document.body.removeChild(linkEl)
         } catch (error) {
             setIsGeneratingData(false)
             setNoDataFound(true)
@@ -248,17 +236,11 @@ const DownloadSourceFilesBreakdown = ({
     // Download function
     const download: TDownloadFunction = async () => {
         try {
+            // Get url
             setIsGeneratingData(true)
             setNoDataFound(false)
-            const url = await getCampaignSourceFilesBreakdownUrl(campaignCode)
+            await downloadCampaignSourceFilesBreakdown(campaignCode)
             setIsGeneratingData(false)
-
-            // Download
-            const linkEl = document.createElement('a')
-            linkEl.href = url
-            document.body.appendChild(linkEl)
-            linkEl.click()
-            document.body.removeChild(linkEl)
         } catch (error) {
             setIsGeneratingData(false)
             setNoDataFound(true)

@@ -1,5 +1,6 @@
 import { IDateFilter, IUser } from '@interfaces'
 import { TCampaignCode } from '@types'
+import { downloadBlob, getFileNameFromHeaders } from '@utils'
 
 const apiUrl = process.env.NEXT_PUBLIC_WRA_DASHBOARD_API_URL as string
 
@@ -53,13 +54,13 @@ export async function check() {
 }
 
 /**
- * Get campaign data url
+ * Download campaign data
  *
  * @param campaignCode The campaign code
  * @param dateFilter The date filter
  */
-export async function getCampaignDataUrl(campaignCode: TCampaignCode, dateFilter: IDateFilter | {}) {
-    const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/data-url`, {
+export async function downloadCampaignData(campaignCode: TCampaignCode, dateFilter: IDateFilter | {}) {
+    const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/data`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -70,17 +71,22 @@ export async function getCampaignDataUrl(campaignCode: TCampaignCode, dateFilter
         throw new Error('Failed to fetch campaign data url')
     }
 
-    const data: string = await response.json()
+    // Get file name from headers
+    const filename = getFileNameFromHeaders(response.headers)
 
-    return data
+    // Create blob
+    const blob = await response.blob()
+
+    // Download
+    downloadBlob(blob, filename)
 }
 
 /**
- * Get campaign countries breakdown url
+ * Download campaign countries breakdown
  *
  * @param campaignCode The campaign code
  */
-export async function getCampaignCountriesBreakdownUrl(campaignCode: TCampaignCode) {
+export async function downloadCampaignCountriesBreakdown(campaignCode: TCampaignCode) {
     const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/countries-breakdown`, {
         method: 'GET',
         credentials: 'include',
@@ -90,17 +96,22 @@ export async function getCampaignCountriesBreakdownUrl(campaignCode: TCampaignCo
         throw new Error('Failed to fetch campaign countries breakdown url')
     }
 
-    const data: string = response.url
+    // Get file name from headers
+    const filename = getFileNameFromHeaders(response.headers)
 
-    return data
+    // Create blob
+    const blob = await response.blob()
+
+    // Download
+    downloadBlob(blob, filename)
 }
 
 /**
- * Get campaign source files breakdown url
+ * Download campaign source files breakdown
  *
  * @param campaignCode The campaign code
  */
-export async function getCampaignSourceFilesBreakdownUrl(campaignCode: TCampaignCode) {
+export async function downloadCampaignSourceFilesBreakdown(campaignCode: TCampaignCode) {
     const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/source-files-breakdown`, {
         method: 'GET',
         credentials: 'include',
@@ -110,7 +121,12 @@ export async function getCampaignSourceFilesBreakdownUrl(campaignCode: TCampaign
         throw new Error('Failed to fetch campaign source files breakdown url')
     }
 
-    const data: string = response.url
+    // Get file name from headers
+    const filename = getFileNameFromHeaders(response.headers)
 
-    return data
+    // Create blob
+    const blob = await response.blob()
+
+    // Download
+    downloadBlob(blob, filename)
 }
