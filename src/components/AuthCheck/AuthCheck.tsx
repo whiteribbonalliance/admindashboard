@@ -1,7 +1,7 @@
 'use client'
 
 import { ReactNode, useEffect, useState } from 'react'
-import { check, logout } from '@services/wra-dashboard-api'
+import { check, logoutUser } from '@services/wra-dashboard-api'
 import { usePathname, useRouter } from 'next/navigation'
 import { useUserStore } from '@stores/user'
 
@@ -33,7 +33,7 @@ export const AuthCheck = ({ children }: IAuthProps) => {
             // Remove user
             if (user) {
                 try {
-                    await logout()
+                    await logoutUser()
                 } catch (error) {}
                 setUser(undefined)
             }

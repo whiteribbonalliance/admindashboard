@@ -6,7 +6,7 @@ import { Control, Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { loginFormSchema, TLoginForm } from '@schemas/login-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@components/Button'
-import { login } from '@services/wra-dashboard-api'
+import { loginUser } from '@services/wra-dashboard-api'
 import { useRouter } from 'next/navigation'
 import { useUserStore } from '@stores/user'
 import { useState } from 'react'
@@ -38,7 +38,7 @@ export const Login = () => {
         formData.append('password', data.password)
 
         try {
-            const user = await login(formData)
+            const user = await loginUser(formData)
             setUser(user)
             setLoginError('')
             router.push('/dashboard')

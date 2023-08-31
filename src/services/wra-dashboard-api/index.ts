@@ -3,11 +3,11 @@ import { ICampaignDownloadUrl, IConfiguration, IDateFilter, IUser } from '@inter
 const apiUrl = process.env.NEXT_PUBLIC_WRA_DASHBOARD_API_URL as string
 
 /**
- * Login
+ * Login user
  *
  * @param formData The form data
  */
-export async function login(formData: FormData) {
+export async function loginUser(formData: FormData) {
     const response = await fetch(`${apiUrl}/auth/login`, {
         method: 'POST',
         body: formData,
@@ -24,9 +24,9 @@ export async function login(formData: FormData) {
 }
 
 /**
- * Logout
+ * Logout user
  */
-export async function logout() {
+export async function logoutUser() {
     return await fetch(`${apiUrl}/auth/logout`, {
         method: 'POST',
         credentials: 'include',
