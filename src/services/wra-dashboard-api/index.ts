@@ -83,7 +83,6 @@ export async function getCampaignDataUrl(campaignCode: TCampaignCode, dateFilter
 export async function getCampaignCountriesBreakdownUrl(campaignCode: TCampaignCode) {
     const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/countries-breakdown`, {
         method: 'GET',
-        headers: { 'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
         credentials: 'include',
     })
 
@@ -104,7 +103,6 @@ export async function getCampaignCountriesBreakdownUrl(campaignCode: TCampaignCo
 export async function getCampaignSourceFilesBreakdownUrl(campaignCode: TCampaignCode) {
     const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/source-files-breakdown`, {
         method: 'GET',
-        headers: { 'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
         credentials: 'include',
     })
 

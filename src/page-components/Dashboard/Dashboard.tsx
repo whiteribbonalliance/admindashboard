@@ -12,7 +12,6 @@ import {
     getCampaignSourceFilesBreakdownUrl,
 } from '@services/wra-dashboard-api'
 import { IDateFilter } from '@interfaces'
-import { saveAs } from 'file-saver'
 import { Tab } from '@headlessui/react'
 
 interface ITabContentProps {
@@ -152,9 +151,15 @@ const DownloadCampaignData = ({
         try {
             setIsGeneratingData(true)
             setNoDataFound(false)
-            const downloadUrl = await getCampaignDataUrl(campaignCode, dateFilter)
+            const url = await getCampaignDataUrl(campaignCode, dateFilter)
             setIsGeneratingData(false)
-            saveAs(downloadUrl)
+
+            // Download
+            const linkEl = document.createElement('a')
+            linkEl.href = url
+            document.body.appendChild(linkEl)
+            linkEl.click()
+            document.body.removeChild(linkEl)
         } catch (error) {
             setIsGeneratingData(false)
             setNoDataFound(true)
@@ -213,7 +218,13 @@ const DownloadCountriesBreakdown = ({
             setNoDataFound(false)
             const url = await getCampaignCountriesBreakdownUrl(campaignCode)
             setIsGeneratingData(false)
-            saveAs(url)
+
+            // Download
+            const linkEl = document.createElement('a')
+            linkEl.href = url
+            document.body.appendChild(linkEl)
+            linkEl.click()
+            document.body.removeChild(linkEl)
         } catch (error) {
             setIsGeneratingData(false)
             setNoDataFound(true)
@@ -241,7 +252,13 @@ const DownloadSourceFilesBreakdown = ({
             setNoDataFound(false)
             const url = await getCampaignSourceFilesBreakdownUrl(campaignCode)
             setIsGeneratingData(false)
-            saveAs(url)
+
+            // Download
+            const linkEl = document.createElement('a')
+            linkEl.href = url
+            document.body.appendChild(linkEl)
+            linkEl.click()
+            document.body.removeChild(linkEl)
         } catch (error) {
             setIsGeneratingData(false)
             setNoDataFound(true)
