@@ -7,9 +7,9 @@ import { Button } from '@components/Button'
 import { TCampaignCode } from '@types'
 import React, { Dispatch, useEffect, useState } from 'react'
 import {
-    getCampaignCountriesBreakdown,
-    getCampaignDownloadUrl,
-    getCampaignSourceFilesBreakdown,
+    getCampaignCountriesBreakdownUrl,
+    getCampaignDataUrl,
+    getCampaignSourceFilesBreakdownUrl,
 } from '@services/wra-dashboard-api'
 import { IDateFilter } from '@interfaces'
 import { saveAs } from 'file-saver'
@@ -153,9 +153,9 @@ const DownloadCampaignData = ({
         try {
             setIsGeneratingData(true)
             setNoDataFound(false)
-            const downloadUrl = await getCampaignDownloadUrl(campaignCode, dateFilter)
+            const downloadUrl = await getCampaignDataUrl(campaignCode, dateFilter)
             setIsGeneratingData(false)
-            saveAs(downloadUrl.url)
+            saveAs(downloadUrl)
         } catch (error) {
             setIsGeneratingData(false)
             setNoDataFound(true)
@@ -212,7 +212,7 @@ const DownloadCountriesBreakdown = ({
         try {
             setIsGeneratingData(true)
             setNoDataFound(false)
-            const url = await getCampaignCountriesBreakdown(campaignCode)
+            const url = await getCampaignCountriesBreakdownUrl(campaignCode)
             setIsGeneratingData(false)
             saveAs(url)
         } catch (error) {
@@ -240,7 +240,7 @@ const DownloadSourceFilesBreakdown = ({
         try {
             setIsGeneratingData(true)
             setNoDataFound(false)
-            const url = await getCampaignSourceFilesBreakdown(campaignCode)
+            const url = await getCampaignSourceFilesBreakdownUrl(campaignCode)
             setIsGeneratingData(false)
             saveAs(url)
         } catch (error) {
