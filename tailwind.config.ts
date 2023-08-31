@@ -6,7 +6,11 @@ const config: Config = {
         './src/page-components/**/*.{js,ts,jsx,tsx,mdx}',
         './src/app/**/*.{js,ts,jsx,tsx,mdx}',
     ],
-    theme: {},
+    theme: {
+        fontFamily: {
+            'inter': ['var(--font-inter)', 'Arial', 'sans-serif'],
+        },
+    },
     plugins: [],
 }
 
