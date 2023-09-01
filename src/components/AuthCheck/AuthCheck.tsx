@@ -10,7 +10,7 @@ interface IAuthProps {
     children: ReactNode
 }
 
-const publicPaths: string[] = ['/test']
+const publicPaths: string[] = []
 
 export const AuthCheck = ({ children }: IAuthProps) => {
     const user = useUserStore((state) => state.user)
