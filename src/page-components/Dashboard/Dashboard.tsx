@@ -15,9 +15,6 @@ import { IDateFilter } from '@interfaces'
 import { Tab } from '@headlessui/react'
 import DatePicker from 'react-datepicker'
 
-const generatingDataText = 'Generating data, this might take a while...'
-const noDataText = 'Could not get data or data does not exist'
-
 interface ITabContentProps {
     campaignCode: TCampaignCode
 }
@@ -267,11 +264,17 @@ const ButtonArea = ({ download, isGeneratingData, noDataFound }: IButtonAreaProp
 
             {/* Generating data text */}
             {isGeneratingData && (
-                <div className="mt-3 rounded-md bg-green-200 p-1.5 text-green-900">{generatingDataText}</div>
+                <div className="mt-3 rounded-md bg-green-200 p-1.5 text-green-900">
+                    Generating data, this might take a while...
+                </div>
             )}
 
             {/* No data text */}
-            {noDataFound && <div className="mt-3 rounded-md bg-red-100 p-1.5 text-sm text-red-700">{noDataText}</div>}
+            {noDataFound && (
+                <div className="mt-3 rounded-md bg-red-100 p-1.5 text-sm text-red-700">
+                    Could not get data or data does not exist
+                </div>
+            )}
         </div>
     )
 }
