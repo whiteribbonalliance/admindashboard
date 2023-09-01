@@ -10,7 +10,7 @@ interface IAuthProps {
     children: ReactNode
 }
 
-const publicPaths = [Path.LOGIN as string]
+const publicPaths: string[] = ['/test']
 
 export const AuthCheck = ({ children }: IAuthProps) => {
     const user = useUserStore((state) => state.user)
@@ -57,9 +57,15 @@ export const AuthCheck = ({ children }: IAuthProps) => {
     useEffect(() => {
         if (authCheckSuccess === undefined) return
 
+        // Public paths can be shown
+        if (publicPaths.includes(pathname)) {
+            setShowPageContent(true)
+            return
+        }
+
         // Auth check failed
         if (!authCheckSuccess) {
-            if (!publicPaths.includes(pathname)) {
+            if (pathname !== Path.LOGIN) {
                 router.push(Path.LOGIN)
             } else {
                 setShowPageContent(true)
@@ -68,7 +74,7 @@ export const AuthCheck = ({ children }: IAuthProps) => {
 
         // Auth check success
         else {
-            if (publicPaths.includes(pathname)) {
+            if (pathname === Path.LOGIN) {
                 router.push(Path.DASHBOARD)
             } else {
                 setShowPageContent(true)
