@@ -53,17 +53,21 @@ export const Login = () => {
             <div className="w-full max-w-md">
                 <Box>
                     <div>
-                        <h1 className="mb-3 text-center text-2xl">Login</h1>
+                        <h1 className="mb-5 text-center text-2xl">Login</h1>
                         {/* Login form */}
                         <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
-                            <p className="mb-3 text-sm text-red-400">{loginError && loginError}</p>
-                            <div className="mb-1">
+                            {loginError && (
+                                <p className="mb-3 rounded-md bg-red-100 p-1.5 text-center text-sm text-red-700">
+                                    {loginError}
+                                </p>
+                            )}
+                            <div className="mb-3">
                                 <InputUsername id="input-login" control={control} />
-                                <p className="mt-1 text-sm text-red-400">{errors.username?.message}</p>
+                                <p className="mt-1 text-sm text-red-700">{errors.username?.message}</p>
                             </div>
                             <div className="mb-5">
                                 <InputPassword id="input-password" control={control} />
-                                <p className="mt-1 text-sm text-red-400">{errors.password?.message}</p>
+                                <p className="mt-1 text-sm text-red-700">{errors.password?.message}</p>
                             </div>
                             <div>
                                 <Button text="Login" type="submit" />

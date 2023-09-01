@@ -1,4 +1,4 @@
-import {CampaignCode} from '@enums'
+import { CampaignCode } from '@enums'
 import {
     economicEmpowermentMexicoConfig,
     healthwellbeingConfig,
@@ -7,7 +7,8 @@ import {
     whatWomenWantPakistanConfig,
     whatYoungPeopleWantConfig,
 } from '@configurations'
-import {TCampaignCode} from '@types'
+import { TCampaignCode } from '@types'
+import { v4 as uuidv4 } from 'uuid'
 
 /**
  * Merge Tailwind CSS classes
@@ -41,15 +42,18 @@ export function getCampaignConfig(campaignCode: TCampaignCode) {
 }
 
 /**
- * Get file name from header
+ * Get Excel file name from header
  *
  * @param headers Headers
  */
-export function getFileNameFromHeaders(headers: Headers) {
+export function getExcelFileNameFromHeaders(headers: Headers) {
     const contentDisposition = headers.get('content-disposition')
-    let filename = 'file.xlsx'
+    let filename = ''
     if (contentDisposition) {
         filename = contentDisposition.split('filename=')[1]
+    }
+    if (filename === '') {
+        filename = `${uuidv4().replace('-', '')}.xlsx`
     }
 
     return filename

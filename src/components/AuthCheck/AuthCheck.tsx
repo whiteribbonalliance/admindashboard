@@ -1,7 +1,7 @@
 'use client'
 
 import { ReactNode, useEffect, useState } from 'react'
-import { check, logoutUser } from '@services/wra-dashboard-api'
+import { checkUser, logoutUser } from '@services/wra-dashboard-api'
 import { usePathname, useRouter } from 'next/navigation'
 import { useUserStore } from '@stores/user'
 import { Path } from '@enums'
@@ -14,6 +14,7 @@ const publicPaths = [Path.LOGIN as string]
 
 export const AuthCheck = ({ children }: IAuthProps) => {
     const user = useUserStore((state) => state.user)
+    const isLoggedIn = !!user
     const setUser = useUserStore((state) => state.setUser)
     const [authCheckSuccess, setAuthCheckSuccess] = useState<boolean | undefined>(undefined)
     const [showPageContent, setShowPageContent] = useState<boolean>(false)
@@ -21,60 +22,59 @@ export const AuthCheck = ({ children }: IAuthProps) => {
     const router = useRouter()
 
     // Do auth check
-    async function doAuthCheck() {
-        try {
-            // Get user
-            const user = await check()
-
-            // Set user
-            setUser(user)
-
-            // Auth check succeeded
-            setAuthCheckSuccess(true)
-        } catch (error) {
-            // Remove user
-            if (user) {
-                try {
-                    await logoutUser()
-                } catch (error) {}
-                setUser(undefined)
-            }
-
-            // Auth check failed
-            setAuthCheckSuccess(false)
-        }
-    }
-
-    // Auth check
+    // If auth check succeeds, user object is set
+    // If auth check fails, user object is removed
     useEffect(() => {
-        setAuthCheckSuccess(undefined)
-        doAuthCheck().then()
-    }, [pathname])
+        ;(async () => {
+            setAuthCheckSuccess(undefined)
+
+            try {
+                // Get user
+                const user = await checkUser()
+
+                // Set user
+                setUser(user)
+
+                // Auth check success
+                setAuthCheckSuccess(true)
+            } catch (error) {
+                // Remove user
+                if (isLoggedIn) {
+                    try {
+                        await logoutUser()
+                    } catch (error) {}
+                    setUser(undefined)
+                }
+
+                // Auth check failed
+                setAuthCheckSuccess(false)
+            }
+        })()
+    }, [pathname, isLoggedIn, setUser])
 
     // Check if page content can be shown
+    // Or else redirect to another page
     useEffect(() => {
-        setShowPageContent(false)
+        if (authCheckSuccess === undefined) return
 
-        // Not logged in & auth check failed
-        if (!user && authCheckSuccess === false) {
+        // Auth check failed
+        if (!authCheckSuccess) {
             if (!publicPaths.includes(pathname)) {
                 router.push(Path.LOGIN)
-                setShowPageContent(false)
             } else {
                 setShowPageContent(true)
             }
         }
 
-        // Logged in & auth check success
-        else if (user && authCheckSuccess === true) {
+        // Auth check success
+        else {
             if (publicPaths.includes(pathname)) {
                 router.push(Path.DASHBOARD)
-                setShowPageContent(false)
             } else {
                 setShowPageContent(true)
             }
         }
-    }, [user, authCheckSuccess, setShowPageContent, router, pathname])
+    }, [authCheckSuccess, router, pathname])
 
     if (showPageContent) {
         return <div>{children}</div>

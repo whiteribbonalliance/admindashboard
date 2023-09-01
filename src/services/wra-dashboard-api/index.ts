@@ -1,8 +1,8 @@
 import { IDateFilter, IUser } from '@interfaces'
 import { TCampaignCode } from '@types'
-import { downloadBlob, getFileNameFromHeaders } from '@utils'
+import { downloadBlob, getExcelFileNameFromHeaders } from '@utils'
 
-const apiUrl = process.env.NEXT_PUBLIC_WRA_DASHBOARD_API_URL as string
+const apiUrl = process.env.NEXT_PUBLIC_WRA_DASHBOARD_API_URL
 
 /**
  * Login user
@@ -36,16 +36,16 @@ export async function logoutUser() {
 }
 
 /**
- * Check
+ * Check user
  */
-export async function check() {
+export async function checkUser() {
     const response = await fetch(`${apiUrl}/auth/check`, {
         method: 'POST',
         credentials: 'include',
     })
 
     if (!response.ok) {
-        throw new Error('Failed to login user')
+        throw new Error('Failed to check user')
     }
 
     const data: IUser = await response.json()
@@ -72,7 +72,7 @@ export async function downloadCampaignData(campaignCode: TCampaignCode, dateFilt
     }
 
     // Get file name from headers
-    const filename = getFileNameFromHeaders(response.headers)
+    const filename = getExcelFileNameFromHeaders(response.headers)
 
     // Create blob
     const blob = await response.blob()
@@ -97,7 +97,7 @@ export async function downloadCampaignCountriesBreakdown(campaignCode: TCampaign
     }
 
     // Get file name from headers
-    const filename = getFileNameFromHeaders(response.headers)
+    const filename = getExcelFileNameFromHeaders(response.headers)
 
     // Create blob
     const blob = await response.blob()
@@ -122,7 +122,7 @@ export async function downloadCampaignSourceFilesBreakdown(campaignCode: TCampai
     }
 
     // Get file name from headers
-    const filename = getFileNameFromHeaders(response.headers)
+    const filename = getExcelFileNameFromHeaders(response.headers)
 
     // Create blob
     const blob = await response.blob()

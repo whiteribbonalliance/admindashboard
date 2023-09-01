@@ -5,7 +5,7 @@ import { useUserStore } from '@stores/user'
 import { classNames, getCampaignConfig } from '@utils'
 import { Button } from '@components/Button'
 import { TCampaignCode } from '@types'
-import React, { Dispatch, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     downloadCampaignCountriesBreakdown,
     downloadCampaignData,
@@ -13,19 +13,24 @@ import {
 } from '@services/wra-dashboard-api'
 import { IDateFilter } from '@interfaces'
 import { Tab } from '@headlessui/react'
+import DatePicker from 'react-datepicker'
+
+const generatingDataText = 'Generating data, this might take a while...'
+const noDataText = 'Could not get data or data does not exist'
 
 interface ITabContentProps {
     campaignCode: TCampaignCode
-    setDownloadFunction: Dispatch<() => () => Promise<void>>
-    setIsGeneratingData: Dispatch<boolean>
-    setNoDataFound: Dispatch<boolean>
 }
 
 interface IDownloaderProps {
     campaignCode: TCampaignCode
 }
 
-type TDownloadFunction = () => Promise<void>
+interface IButtonAreaProps {
+    download: () => Promise<void>
+    isGeneratingData: boolean
+    noDataFound: boolean
+}
 
 export const Dashboard = () => {
     const user = useUserStore((state) => state.user)
@@ -46,9 +51,6 @@ export const Dashboard = () => {
 }
 
 const Downloader = ({ campaignCode }: IDownloaderProps) => {
-    const [downloadFunction, setDownloadFunction] = useState<TDownloadFunction | undefined>(undefined)
-    const [isGeneratingData, setIsGeneratingData] = useState<boolean>(false)
-    const [noDataFound, setNoDataFound] = useState<boolean>(false)
     const campaignConfig = getCampaignConfig(campaignCode)
 
     // Tabs
@@ -70,13 +72,6 @@ const Downloader = ({ campaignCode }: IDownloaderProps) => {
         },
     ]
 
-    // Download
-    function download() {
-        if (downloadFunction) {
-            downloadFunction().then()
-        }
-    }
-
     return (
         <div className="w-full max-w-5xl">
             <div className="mb-2 text-xl font-bold">{campaignConfig.title}</div>
@@ -84,7 +79,7 @@ const Downloader = ({ campaignCode }: IDownloaderProps) => {
                 <Box>
                     <div className="flex flex-col gap-y-3">
                         <Tab.Group>
-                            <Tab.List data-tooltip-id="download" className="flex flex-col sm:flex-row">
+                            <Tab.List data-tooltip-id="download" className="flex flex-col gap-x-2.5 sm:flex-row">
                                 {tabs.map((tab) => (
                                     <Tab
                                         key={tab.id}
@@ -103,28 +98,12 @@ const Downloader = ({ campaignCode }: IDownloaderProps) => {
                             </Tab.List>
                             <Tab.Panels>
                                 {tabs.map(({ id, TabContent }) => (
-                                    <Tab.Panel key={id} unmount={true} className="w-full">
-                                        {TabContent && (
-                                            <TabContent
-                                                campaignCode={campaignCode}
-                                                setDownloadFunction={setDownloadFunction}
-                                                setIsGeneratingData={setIsGeneratingData}
-                                                setNoDataFound={setNoDataFound}
-                                            />
-                                        )}
+                                    <Tab.Panel key={id} unmount={false} className="w-full">
+                                        {TabContent && <TabContent campaignCode={campaignCode} />}
                                     </Tab.Panel>
                                 ))}
                             </Tab.Panels>
                         </Tab.Group>
-                        <div>
-                            <div onClick={download}>
-                                <Button text="Download" type="button" />
-                            </div>
-                            {isGeneratingData && (
-                                <div className="mt-1">Generating data, this might take a while...</div>
-                            )}
-                            {noDataFound && <div className="mt-1">No data found</div>}
-                        </div>
                     </div>
                 </Box>
             </div>
@@ -132,14 +111,13 @@ const Downloader = ({ campaignCode }: IDownloaderProps) => {
     )
 }
 
-const DownloadCampaignData = ({
-    campaignCode,
-    setDownloadFunction,
-    setIsGeneratingData,
-    setNoDataFound,
-}: ITabContentProps) => {
+const DownloadCampaignData = ({ campaignCode }: ITabContentProps) => {
+    const [isGeneratingData, setIsGeneratingData] = useState<boolean>(false)
+    const [noDataFound, setNoDataFound] = useState<boolean>(false)
     const [selectedOption, setSelectedOption] = useState<string>('all')
     const [dateFilter, setDateFilter] = useState<IDateFilter | {}>({})
+    const [fromDate, setFromDate] = useState<Date | undefined>(undefined)
+    const [toDate, setToDate] = useState<Date | undefined>(undefined)
 
     // On option change
     function onOptionChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -147,7 +125,7 @@ const DownloadCampaignData = ({
     }
 
     // Download function
-    const download: TDownloadFunction = async () => {
+    const download = async () => {
         try {
             // Get url
             setIsGeneratingData(true)
@@ -160,10 +138,14 @@ const DownloadCampaignData = ({
         }
     }
 
-    // Set download function
+    // Set date filter
     useEffect(() => {
-        setDownloadFunction(() => download)
-    }, [])
+        if (fromDate && toDate) {
+            const fromDateAsString = `${fromDate.getFullYear()}-${fromDate.getMonth() + 1}-${fromDate.getDate()}`
+            const toDateAsString = `${toDate.getFullYear()}-${toDate.getMonth() + 1}-${toDate.getDate()}`
+            setDateFilter({ from_date: fromDateAsString, to_date: toDateAsString })
+        }
+    }, [fromDate, toDate])
 
     return (
         <div>
@@ -194,19 +176,41 @@ const DownloadCampaignData = ({
                     <label htmlFor={`${campaignCode}-download-option-2`}>Select date range</label>
                 </div>
             </div>
-            {selectedOption === 'date-range' && <div className="mb-3">ADD CALENDAR HERE</div>}
+
+            {/* Date picker */}
+            {selectedOption === 'date-range' && (
+                <div className="mb-5 flex items-center gap-x-2">
+                    <div>From</div>
+                    <DatePicker
+                        className="mr-3 rounded-md px-2 py-1"
+                        dateFormat="d MMM yyyy"
+                        selected={fromDate}
+                        onChange={(date) => {
+                            if (date) setFromDate(date)
+                        }}
+                    />
+                    <div>To</div>
+                    <DatePicker
+                        className="rounded-md px-2 py-1"
+                        dateFormat="d MMM yyyy"
+                        selected={toDate}
+                        onChange={(date) => {
+                            if (date) setToDate(date)
+                        }}
+                    />
+                </div>
+            )}
+            <ButtonArea download={download} isGeneratingData={isGeneratingData} noDataFound={noDataFound} />
         </div>
     )
 }
 
-const DownloadCountriesBreakdown = ({
-    campaignCode,
-    setDownloadFunction,
-    setIsGeneratingData,
-    setNoDataFound,
-}: ITabContentProps) => {
+const DownloadCountriesBreakdown = ({ campaignCode }: ITabContentProps) => {
+    const [isGeneratingData, setIsGeneratingData] = useState<boolean>(false)
+    const [noDataFound, setNoDataFound] = useState<boolean>(false)
+
     // Download function
-    const download: TDownloadFunction = async () => {
+    const download = async () => {
         try {
             // Get url
             setIsGeneratingData(true)
@@ -219,22 +223,20 @@ const DownloadCountriesBreakdown = ({
         }
     }
 
-    // Set download function
-    useEffect(() => {
-        setDownloadFunction(() => download)
-    }, [])
-
-    return <div>Download countries breakdown</div>
+    return (
+        <div>
+            <div className="mb-5">Download countries breakdown</div>
+            <ButtonArea download={download} isGeneratingData={isGeneratingData} noDataFound={noDataFound} />
+        </div>
+    )
 }
 
-const DownloadSourceFilesBreakdown = ({
-    campaignCode,
-    setDownloadFunction,
-    setIsGeneratingData,
-    setNoDataFound,
-}: ITabContentProps) => {
+const DownloadSourceFilesBreakdown = ({ campaignCode }: ITabContentProps) => {
+    const [isGeneratingData, setIsGeneratingData] = useState<boolean>(false)
+    const [noDataFound, setNoDataFound] = useState<boolean>(false)
+
     // Download function
-    const download: TDownloadFunction = async () => {
+    const download = async () => {
         try {
             // Get url
             setIsGeneratingData(true)
@@ -247,10 +249,29 @@ const DownloadSourceFilesBreakdown = ({
         }
     }
 
-    // Set download function
-    useEffect(() => {
-        setDownloadFunction(() => download)
-    }, [])
+    return (
+        <div>
+            <div className="mb-5">Download source files breakdown</div>
+            <ButtonArea download={download} isGeneratingData={isGeneratingData} noDataFound={noDataFound} />
+        </div>
+    )
+}
 
-    return <div>Download source files breakdown</div>
+const ButtonArea = ({ download, isGeneratingData, noDataFound }: IButtonAreaProps) => {
+    return (
+        <div>
+            {/* Button */}
+            <div onClick={!isGeneratingData ? download : undefined}>
+                <Button text="Download" type="button" disabled={isGeneratingData} />
+            </div>
+
+            {/* Generating data text */}
+            {isGeneratingData && (
+                <div className="mt-3 rounded-md bg-green-200 p-1.5 text-green-900">{generatingDataText}</div>
+            )}
+
+            {/* No data text */}
+            {noDataFound && <div className="mt-3 rounded-md bg-red-100 p-1.5 text-sm text-red-700">{noDataText}</div>}
+        </div>
+    )
 }

@@ -11,7 +11,7 @@ export const Header = () => {
     return (
         <div className="flex h-24 items-center justify-between border-b-2 border-gray-200 p-5">
             <div />
-            <div className="text-4xl">Admin dashboard</div>
+            <div className="text-4xl font-bold">Admin dashboard</div>
             <div>
                 {user && (
                     <div onClick={logout}>
