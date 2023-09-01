@@ -1,5 +1,5 @@
 import { Dashboard } from '@page-components/Dashboard'
 
-export default () => {
+export default function DashboardPage() {
     return <Dashboard />
 }
