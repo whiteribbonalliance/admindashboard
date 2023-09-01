@@ -62,7 +62,7 @@ export const Login = () => {
                                 </p>
                             )}
                             <div className="mb-3">
-                                <InputUsername id="input-login" control={control} />
+                                <InputUsername id="input-username" control={control} />
                                 <p className="mt-1 text-sm text-red-700">{errors.username?.message}</p>
                             </div>
                             <div className="mb-5">
