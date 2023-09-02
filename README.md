@@ -19,7 +19,7 @@ The following main functionalities are included:
 
 Configure .env.local.
 
-- `NEXT_PUBLIC_WRA_DASHBOARD_API_URL=` The url to What Women Want Dashboard API
+- `NEXT_PUBLIC_WRA_DASHBOARD_API_URL=` The url to What Women Want Dashboard API.
 
 ```bash
 npm install

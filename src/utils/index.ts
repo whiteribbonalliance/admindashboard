@@ -42,7 +42,8 @@ export function getCampaignConfig(campaignCode: TCampaignCode) {
 }
 
 /**
- * Get Excel file name from header
+ * Get Excel file name from headers.
+ * If the filename is not present in headers, a random filename will be generated.
  *
  * @param headers Headers
  */

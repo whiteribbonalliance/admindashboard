@@ -68,7 +68,7 @@ export async function downloadCampaignData(campaignCode: TCampaignCode, dateFilt
     })
 
     if (!response.ok) {
-        throw new Error('Failed to fetch campaign data url')
+        throw new Error('Failed to fetch campaign data')
     }
 
     // Get file name from headers
@@ -93,7 +93,7 @@ export async function downloadCampaignCountriesBreakdown(campaignCode: TCampaign
     })
 
     if (!response.ok) {
-        throw new Error('Failed to fetch campaign countries breakdown url')
+        throw new Error('Failed to fetch campaign countries breakdown')
     }
 
     // Get file name from headers
@@ -118,7 +118,7 @@ export async function downloadCampaignSourceFilesBreakdown(campaignCode: TCampai
     })
 
     if (!response.ok) {
-        throw new Error('Failed to fetch campaign source files breakdown url')
+        throw new Error('Failed to fetch campaign source files breakdown')
     }
 
     // Get file name from headers
