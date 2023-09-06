@@ -3,6 +3,7 @@ import { TCampaignCode } from '@types'
 import { downloadBlob, getExcelFileNameFromHeaders } from '@utils'
 
 const apiUrl = process.env.NEXT_PUBLIC_WRA_DASHBOARD_API_URL
+const siteUrl = 'https://admin.whiteribbonalliance.org'
 
 /**
  * Login user
@@ -31,6 +32,7 @@ export async function loginUser(formData: FormData) {
 export async function logoutUser() {
     return await fetch(`${apiUrl}/auth/logout`, {
         method: 'POST',
+        headers: { 'Access-Control-Allow-Origin': siteUrl },
         credentials: 'include',
     })
 }
@@ -41,6 +43,7 @@ export async function logoutUser() {
 export async function checkUser() {
     const response = await fetch(`${apiUrl}/auth/check`, {
         method: 'POST',
+        headers: { 'Access-Control-Allow-Origin': siteUrl },
         credentials: 'include',
     })
 
@@ -62,7 +65,10 @@ export async function checkUser() {
 export async function downloadCampaignData(campaignCode: TCampaignCode, dateFilter: IDateFilter | {}) {
     const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/data`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': siteUrl,
+        },
         credentials: 'include',
         body: JSON.stringify(dateFilter),
     })
@@ -89,6 +95,7 @@ export async function downloadCampaignData(campaignCode: TCampaignCode, dateFilt
 export async function downloadCampaignCountriesBreakdown(campaignCode: TCampaignCode) {
     const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/countries-breakdown`, {
         method: 'GET',
+        headers: { 'Access-Control-Allow-Origin': siteUrl },
         credentials: 'include',
     })
 
@@ -114,6 +121,7 @@ export async function downloadCampaignCountriesBreakdown(campaignCode: TCampaign
 export async function downloadCampaignSourceFilesBreakdown(campaignCode: TCampaignCode) {
     const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/source-files-breakdown`, {
         method: 'GET',
+        headers: { 'Access-Control-Allow-Origin': siteUrl },
         credentials: 'include',
     })
 
