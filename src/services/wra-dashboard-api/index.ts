@@ -1,6 +1,6 @@
 import { IDateFilter, IUser } from '@interfaces'
 import { TCampaignCode } from '@types'
-import { downloadBlob, getExcelFileNameFromHeaders } from '@utils'
+import { downloadCsvBlob, getCsvFileNameFromHeaders } from '@utils'
 
 const apiUrl = process.env.NEXT_PUBLIC_WRA_DASHBOARD_API_URL
 
@@ -74,13 +74,13 @@ export async function downloadCampaignData(campaignCode: TCampaignCode, dateFilt
     }
 
     // Get file name from headers
-    const filename = getExcelFileNameFromHeaders(response.headers)
+    const filename = getCsvFileNameFromHeaders(response.headers)
 
     // Create blob
     const blob = await response.blob()
 
     // Download
-    downloadBlob(blob, filename)
+    downloadCsvBlob(blob, filename)
 }
 
 /**
@@ -99,13 +99,13 @@ export async function downloadCampaignCountriesBreakdown(campaignCode: TCampaign
     }
 
     // Get file name from headers
-    const filename = getExcelFileNameFromHeaders(response.headers)
+    const filename = getCsvFileNameFromHeaders(response.headers)
 
     // Create blob
     const blob = await response.blob()
 
     // Download
-    downloadBlob(blob, filename)
+    downloadCsvBlob(blob, filename)
 }
 
 /**
@@ -124,11 +124,11 @@ export async function downloadCampaignSourceFilesBreakdown(campaignCode: TCampai
     }
 
     // Get file name from headers
-    const filename = getExcelFileNameFromHeaders(response.headers)
+    const filename = getCsvFileNameFromHeaders(response.headers)
 
     // Create blob
     const blob = await response.blob()
 
     // Download
-    downloadBlob(blob, filename)
+    downloadCsvBlob(blob, filename)
 }

@@ -1,4 +1,4 @@
-import { CampaignCode } from '@enums'
+import {CampaignCode} from '@enums'
 import {
     economicEmpowermentMexicoConfig,
     healthwellbeingConfig,
@@ -7,8 +7,8 @@ import {
     whatWomenWantPakistanConfig,
     whatYoungPeopleWantConfig,
 } from '@configurations'
-import { TCampaignCode } from '@types'
-import { v4 as uuidv4 } from 'uuid'
+import {TCampaignCode} from '@types'
+import {v4 as uuidv4} from 'uuid'
 
 /**
  * Merge Tailwind CSS classes
@@ -42,32 +42,32 @@ export function getCampaignConfig(campaignCode: TCampaignCode) {
 }
 
 /**
- * Get Excel file name from headers.
+ * Get CSV file name from headers.
  * If the filename is not present in headers, a random filename will be generated.
  *
  * @param headers Headers
  */
-export function getExcelFileNameFromHeaders(headers: Headers) {
+export function getCsvFileNameFromHeaders(headers: Headers) {
     const contentDisposition = headers.get('content-disposition')
     let filename = ''
     if (contentDisposition) {
         filename = contentDisposition.split('filename=')[1]
     }
     if (filename === '') {
-        filename = `${uuidv4().replace('-', '')}.xlsx`
+        filename = `${uuidv4().replace('-', '')}.csv`
     }
 
     return filename
 }
 
 /**
- * Download blob
+ * Download CSV blob
  *
  * @param blob The Blob
  * @param filename The filename
  */
-export function downloadBlob(blob: Blob, filename: string) {
-    const file = new File([blob], filename)
+export function downloadCsvBlob(blob: Blob, filename: string) {
+    const file = new File([blob], filename, { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(file)
     window.open(url, '_blank')
     URL.revokeObjectURL(url)
