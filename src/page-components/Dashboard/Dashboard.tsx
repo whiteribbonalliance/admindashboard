@@ -14,6 +14,7 @@ import {
 import { IConfiguration, IDateFilter } from '@interfaces'
 import { Tab } from '@headlessui/react'
 import DatePicker from 'react-datepicker'
+import { CampaignCode } from '@enums'
 
 interface ITabContentProps {
     campaignCode: TCampaignCode
@@ -32,7 +33,15 @@ interface IButtonAreaProps {
 
 export const Dashboard = () => {
     const user = useUserStore((state) => state.user)
-    const campaignCodes = user ? user?.campaign_access : []
+    let userCampaignCodes = user ? user?.campaign_access : []
+    let campaignCodes: TCampaignCode[] = []
+
+    // Check if campaign code from user exists
+    for (const campaignCode of userCampaignCodes) {
+        if (Object.values(CampaignCode).includes(campaignCode)) {
+            campaignCodes.push(campaignCode)
+        }
+    }
 
     return (
         <div>
