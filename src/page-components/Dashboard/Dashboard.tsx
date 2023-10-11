@@ -11,7 +11,7 @@ import {
     downloadCampaignData,
     downloadCampaignSourceFilesBreakdown,
 } from '@services/wra-dashboard-api'
-import { IDateFilter } from '@interfaces'
+import { IConfiguration, IDateFilter } from '@interfaces'
 import { Tab } from '@headlessui/react'
 import DatePicker from 'react-datepicker'
 
@@ -21,6 +21,7 @@ interface ITabContentProps {
 
 interface IDownloaderProps {
     campaignCode: TCampaignCode
+    campaignConfig: IConfiguration
 }
 
 interface IButtonAreaProps {
@@ -39,7 +40,15 @@ export const Dashboard = () => {
                 <div className="flex w-full flex-col items-center gap-y-10">
                     {campaignCodes.length > 0 &&
                         campaignCodes.map((campaignCode) => {
-                            return <Downloader key={campaignCode} campaignCode={campaignCode} />
+                            const campaignConfig = getCampaignConfig(campaignCode)
+                            if (!campaignConfig) return null
+                            return (
+                                <Downloader
+                                    key={campaignCode}
+                                    campaignCode={campaignCode}
+                                    campaignConfig={campaignConfig}
+                                />
+                            )
                         })}
                 </div>
             </div>
@@ -47,9 +56,7 @@ export const Dashboard = () => {
     )
 }
 
-const Downloader = ({ campaignCode }: IDownloaderProps) => {
-    const campaignConfig = getCampaignConfig(campaignCode)
-
+const Downloader = ({ campaignCode, campaignConfig }: IDownloaderProps) => {
     // Tabs
     const tabs = [
         {
