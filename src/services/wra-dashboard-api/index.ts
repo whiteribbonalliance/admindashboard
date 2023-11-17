@@ -1,4 +1,4 @@
-import { IDateFilter, IUser } from '@interfaces'
+import { IDataLoading, IDateFilter, IUser } from '@interfaces'
 import { TCampaignCode } from '@types'
 import { downloadCsvBlob, getCsvFileNameFromHeaders } from '@utils'
 
@@ -17,7 +17,7 @@ export async function loginUser(formData: FormData) {
     })
 
     if (!response.ok) {
-        throw new Error('Failed to login user')
+        throw new Error('Failed to login user.')
     }
 
     const data: IUser = await response.json()
@@ -45,7 +45,7 @@ export async function checkUser() {
     })
 
     if (!response.ok) {
-        throw new Error('Failed to check user')
+        throw new Error('Failed to check user.')
     }
 
     const data: IUser = await response.json()
@@ -70,7 +70,7 @@ export async function downloadCampaignData(campaignCode: TCampaignCode, dateFilt
     })
 
     if (!response.ok) {
-        throw new Error('Failed to fetch campaign data')
+        throw new Error('Failed to fetch campaign data.')
     }
 
     // Get file name from headers
@@ -95,7 +95,7 @@ export async function downloadCampaignCountriesBreakdown(campaignCode: TCampaign
     })
 
     if (!response.ok) {
-        throw new Error('Failed to fetch campaign countries breakdown')
+        throw new Error('Failed to fetch campaign countries breakdown.')
     }
 
     // Get file name from headers
@@ -120,7 +120,7 @@ export async function downloadCampaignSourceFilesBreakdown(campaignCode: TCampai
     })
 
     if (!response.ok) {
-        throw new Error('Failed to fetch campaign source files breakdown')
+        throw new Error('Failed to fetch campaign source files breakdown.')
     }
 
     // Get file name from headers
@@ -131,4 +131,36 @@ export async function downloadCampaignSourceFilesBreakdown(campaignCode: TCampai
 
     // Download
     downloadCsvBlob(blob, filename)
+}
+
+/**
+ * Get data loading status
+ */
+export async function getDataLoadingStatus() {
+    const response = await fetch(`${apiUrl}/admin/data/loading-status`, {
+        method: 'GET',
+        credentials: 'include',
+    })
+
+    if (!response.ok) {
+        throw new Error('Failed to check data loading status.')
+    }
+
+    const data: IDataLoading = await response.json()
+
+    return data
+}
+
+/**
+ * Reload data
+ */
+export async function reloadData() {
+    const response = await fetch(`${apiUrl}/admin/data/reload`, {
+        method: 'POST',
+        credentials: 'include',
+    })
+
+    if (!response.ok) {
+        throw new Error('Failed to reload data.')
+    }
 }

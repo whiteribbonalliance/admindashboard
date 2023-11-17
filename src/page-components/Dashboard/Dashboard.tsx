@@ -10,31 +10,50 @@ import {
     downloadCampaignCountriesBreakdown,
     downloadCampaignData,
     downloadCampaignSourceFilesBreakdown,
+    getDataLoadingStatus,
+    reloadData,
 } from '@services/wra-dashboard-api'
-import { IConfiguration, IDateFilter } from '@interfaces'
+import { IConfiguration, IDataLoading, IDateFilter } from '@interfaces'
 import { Tab } from '@headlessui/react'
 import DatePicker from 'react-datepicker'
 import { CampaignCode } from '@enums'
+import { useQuery, UseQueryResult } from 'react-query'
 
 interface ITabContentProps {
     campaignCode: TCampaignCode
+    dataLoadingQuery?: UseQueryResult<IDataLoading>
 }
 
-interface IDownloaderProps {
+interface IDataDownloaderProps {
     campaignCode: TCampaignCode
     campaignConfig: IConfiguration
+    dataLoadingQuery?: UseQueryResult<IDataLoading>
 }
 
 interface IButtonAreaProps {
     download: () => Promise<void>
     isGeneratingData: boolean
     noDataFound: boolean
+    dataLoadingQuery?: UseQueryResult<IDataLoading>
+}
+
+interface IDataLoaderProps {
+    dataLoadingQuery: UseQueryResult<IDataLoading>
 }
 
 export const Dashboard = () => {
     const user = useUserStore((state) => state.user)
     let userCampaignCodes = user ? user?.campaign_access : []
-    let campaignCodes: TCampaignCode[] = []
+    const isAdmin = user ? user.is_admin : false
+    const campaignCodes: TCampaignCode[] = []
+
+    // Data loading query
+    const dataLoadingQuery = useQuery<IDataLoading>({
+        queryFn: getDataLoadingStatus,
+        refetchInterval: 10000,
+        refetchOnWindowFocus: true,
+        refetchOnReconnect: true,
+    })
 
     // Check if campaign code from user exists
     for (const campaignCode of userCampaignCodes) {
@@ -44,28 +63,46 @@ export const Dashboard = () => {
     }
 
     return (
-        <div>
-            <div className="flex w-full justify-center">
-                <div className="flex w-full flex-col items-center gap-y-10">
-                    {campaignCodes.length > 0 &&
-                        campaignCodes.map((campaignCode) => {
-                            const campaignConfig = getCampaignConfig(campaignCode)
-                            if (!campaignConfig) return null
-                            return (
-                                <Downloader
-                                    key={campaignCode}
-                                    campaignCode={campaignCode}
-                                    campaignConfig={campaignConfig}
-                                />
-                            )
-                        })}
+        <div className="flex w-full justify-center">
+            <div className="flex w-full max-w-5xl flex-col justify-center gap-y-10">
+                {isAdmin && (
+                    <>
+                        {/* Data reloader */}
+                        <div className="flex flex-col items-center">
+                            <div className="flex w-full flex-col items-center">
+                                <DataReloader dataLoadingQuery={dataLoadingQuery} />
+                            </div>
+                        </div>
+
+                        {/* Divider */}
+                        <div className="border-2 border-b border-gray-200" />
+                    </>
+                )}
+
+                {/* Data downloader per campaign */}
+                <div className="flex flex-col items-center">
+                    <div className="flex w-full flex-col items-center gap-y-10">
+                        {campaignCodes.length > 0 &&
+                            campaignCodes.map((campaignCode) => {
+                                const campaignConfig = getCampaignConfig(campaignCode)
+                                if (!campaignConfig) return null
+                                return (
+                                    <DataDownloader
+                                        key={campaignCode}
+                                        campaignCode={campaignCode}
+                                        campaignConfig={campaignConfig}
+                                        dataLoadingQuery={dataLoadingQuery}
+                                    />
+                                )
+                            })}
+                    </div>
                 </div>
             </div>
         </div>
     )
 }
 
-const Downloader = ({ campaignCode, campaignConfig }: IDownloaderProps) => {
+const DataDownloader = ({ campaignCode, campaignConfig, dataLoadingQuery }: IDataDownloaderProps) => {
     // Tabs
     const tabs = [
         {
@@ -112,7 +149,12 @@ const Downloader = ({ campaignCode, campaignConfig }: IDownloaderProps) => {
                             <Tab.Panels>
                                 {tabs.map(({ id, TabContent }) => (
                                     <Tab.Panel key={id} unmount={false} className="w-full">
-                                        {TabContent && <TabContent campaignCode={campaignCode} />}
+                                        {TabContent && (
+                                            <TabContent
+                                                campaignCode={campaignCode}
+                                                dataLoadingQuery={dataLoadingQuery}
+                                            />
+                                        )}
                                     </Tab.Panel>
                                 ))}
                             </Tab.Panels>
@@ -124,7 +166,7 @@ const Downloader = ({ campaignCode, campaignConfig }: IDownloaderProps) => {
     )
 }
 
-const DownloadCampaignData = ({ campaignCode }: ITabContentProps) => {
+const DownloadCampaignData = ({ campaignCode, dataLoadingQuery }: ITabContentProps) => {
     const [isGeneratingData, setIsGeneratingData] = useState<boolean>(false)
     const [noDataFound, setNoDataFound] = useState<boolean>(false)
     const [selectedOption, setSelectedOption] = useState<string>('all')
@@ -213,12 +255,17 @@ const DownloadCampaignData = ({ campaignCode }: ITabContentProps) => {
                     />
                 </div>
             )}
-            <ButtonArea download={download} isGeneratingData={isGeneratingData} noDataFound={noDataFound} />
+            <ButtonArea
+                download={download}
+                isGeneratingData={isGeneratingData}
+                noDataFound={noDataFound}
+                dataLoadingQuery={dataLoadingQuery}
+            />
         </div>
     )
 }
 
-const DownloadCountriesBreakdown = ({ campaignCode }: ITabContentProps) => {
+const DownloadCountriesBreakdown = ({ campaignCode, dataLoadingQuery }: ITabContentProps) => {
     const [isGeneratingData, setIsGeneratingData] = useState<boolean>(false)
     const [noDataFound, setNoDataFound] = useState<boolean>(false)
 
@@ -239,12 +286,17 @@ const DownloadCountriesBreakdown = ({ campaignCode }: ITabContentProps) => {
     return (
         <div>
             <div className="mb-5">Download countries breakdown</div>
-            <ButtonArea download={download} isGeneratingData={isGeneratingData} noDataFound={noDataFound} />
+            <ButtonArea
+                download={download}
+                isGeneratingData={isGeneratingData}
+                noDataFound={noDataFound}
+                dataLoadingQuery={dataLoadingQuery}
+            />
         </div>
     )
 }
 
-const DownloadSourceFilesBreakdown = ({ campaignCode }: ITabContentProps) => {
+const DownloadSourceFilesBreakdown = ({ campaignCode, dataLoadingQuery }: ITabContentProps) => {
     const [isGeneratingData, setIsGeneratingData] = useState<boolean>(false)
     const [noDataFound, setNoDataFound] = useState<boolean>(false)
 
@@ -265,18 +317,41 @@ const DownloadSourceFilesBreakdown = ({ campaignCode }: ITabContentProps) => {
     return (
         <div>
             <div className="mb-5">Download source files breakdown</div>
-            <ButtonArea download={download} isGeneratingData={isGeneratingData} noDataFound={noDataFound} />
+            <ButtonArea
+                download={download}
+                isGeneratingData={isGeneratingData}
+                noDataFound={noDataFound}
+                dataLoadingQuery={dataLoadingQuery}
+            />
         </div>
     )
 }
 
-const ButtonArea = ({ download, isGeneratingData, noDataFound }: IButtonAreaProps) => {
+const ButtonArea = ({ download, isGeneratingData, noDataFound, dataLoadingQuery }: IButtonAreaProps) => {
+    const [isDisabled, setIsDisabled] = useState<boolean>(true)
+
+    // Set is disabled
+    useEffect(() => {
+        if (dataLoadingQuery?.data) {
+            if (dataLoadingQuery.data.is_loading || isGeneratingData) {
+                setIsDisabled(true)
+            } else {
+                setIsDisabled(false)
+            }
+        }
+    }, [dataLoadingQuery?.data, isGeneratingData])
+
     return (
         <div>
+            {/* No data text */}
+            {dataLoadingQuery?.data?.is_loading && (
+                <div className="mb-3 mt-3 rounded-md bg-red-100 p-1.5 text-sm text-red-700">
+                    Data reloading in progress, please wait...
+                </div>
+            )}
+
             {/* Button */}
-            <div onClick={!isGeneratingData ? download : undefined}>
-                <Button text="Download" type="button" disabled={isGeneratingData} />
-            </div>
+            <Button text="Download" type="button" onClick={!isDisabled ? download : undefined} disabled={isDisabled} />
 
             {/* Generating data text */}
             {isGeneratingData && (
@@ -291,6 +366,58 @@ const ButtonArea = ({ download, isGeneratingData, noDataFound }: IButtonAreaProp
                     Could not get data or data does not exist
                 </div>
             )}
+        </div>
+    )
+}
+
+const DataReloader = ({ dataLoadingQuery }: IDataLoaderProps) => {
+    const [isDisabled, setIsDisabled] = useState<boolean>(true)
+
+    // Set data loading status
+    let dataLoadingStatus = ''
+    if (dataLoadingQuery.data) {
+        if (dataLoadingQuery.data.is_loading) {
+            dataLoadingStatus = 'Loading...'
+        } else {
+            dataLoadingStatus = 'Complete'
+        }
+    }
+
+    // Reload data
+    function onReloadDataClick() {
+        if (dataLoadingQuery.data) {
+            if (!dataLoadingQuery.data.is_loading) {
+                setIsDisabled(true)
+                reloadData()
+                    .then(() => {
+                        dataLoadingQuery.refetch().then()
+                    })
+                    .catch(() => {})
+            }
+        }
+    }
+
+    // Set is disabled
+    useEffect(() => {
+        if (dataLoadingQuery?.data) {
+            setIsDisabled(dataLoadingQuery.data.is_loading)
+        } else {
+            setIsDisabled(true)
+        }
+    }, [dataLoadingQuery.data])
+
+    return (
+        <div className="w-full max-w-5xl">
+            <div>
+                <Box>
+                    <div className="flex flex-col gap-y-3">
+                        <div className="text-xl font-bold">Status: {dataLoadingStatus}</div>
+                        <div>
+                            <Button text="Reload now" type="button" onClick={onReloadDataClick} disabled={isDisabled} />
+                        </div>
+                    </div>
+                </Box>
+            </div>
         </div>
     )
 }
