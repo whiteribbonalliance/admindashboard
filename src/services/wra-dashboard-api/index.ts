@@ -89,7 +89,7 @@ export async function downloadCampaignData(campaignCode: TCampaignCode, dateFilt
  * @param campaignCode The campaign code
  */
 export async function downloadCampaignCountriesBreakdown(campaignCode: TCampaignCode) {
-    const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/countries-breakdown`, {
+    const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/data/countries-breakdown`, {
         method: 'GET',
         credentials: 'include',
     })
@@ -114,7 +114,7 @@ export async function downloadCampaignCountriesBreakdown(campaignCode: TCampaign
  * @param campaignCode The campaign code
  */
 export async function downloadCampaignSourceFilesBreakdown(campaignCode: TCampaignCode) {
-    const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/source-files-breakdown`, {
+    const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/data/source-files-breakdown`, {
         method: 'GET',
         credentials: 'include',
     })
