@@ -2,7 +2,7 @@
 # gcloud app deploy app.yaml
 
 service: admindashboard
-runtime: nodejs16
+runtime: nodejs18
 
 # Force https and redirect http to https
 handlers:
