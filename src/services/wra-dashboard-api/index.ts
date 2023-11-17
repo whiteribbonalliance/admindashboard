@@ -137,7 +137,7 @@ export async function downloadCampaignSourceFilesBreakdown(campaignCode: TCampai
  * Get data loading status
  */
 export async function getDataLoadingStatus() {
-    const response = await fetch(`${apiUrl}/admin/data/loading-status`, {
+    const response = await fetch(`${apiUrl}/data/loading-status`, {
         method: 'GET',
         credentials: 'include',
     })
@@ -155,7 +155,7 @@ export async function getDataLoadingStatus() {
  * Reload data
  */
 export async function reloadData() {
-    const response = await fetch(`${apiUrl}/admin/data/reload`, {
+    const response = await fetch(`${apiUrl}/data/reload`, {
         method: 'POST',
         credentials: 'include',
     })

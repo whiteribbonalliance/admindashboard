@@ -345,8 +345,8 @@ const ButtonArea = ({ download, isGeneratingData, noDataFound, dataLoadingQuery 
         <div>
             {/* No data text */}
             {dataLoadingQuery?.data?.is_loading && (
-                <div className="mb-3 mt-3 rounded-md bg-red-100 p-1.5 text-sm text-red-700">
-                    Data reloading in progress, please wait...
+                <div className="mb-3 mt-3 rounded-md bg-orange-100 p-1.5 text-sm text-orange-700">
+                    Data loading in progress, please wait...
                 </div>
             )}
 
@@ -411,7 +411,7 @@ const DataReloader = ({ dataLoadingQuery }: IDataLoaderProps) => {
             <div>
                 <Box>
                     <div className="flex flex-col gap-y-3">
-                        <div className="text-xl font-bold">Status: {dataLoadingStatus}</div>
+                        <div className="text-lg font-bold">Status: {dataLoadingStatus}</div>
                         <div>
                             <Button text="Reload now" type="button" onClick={onReloadDataClick} disabled={isDisabled} />
                         </div>
