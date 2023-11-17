@@ -377,9 +377,9 @@ const DataReloader = ({ dataLoadingQuery }: IDataLoaderProps) => {
     let dataLoadingStatus = ''
     if (dataLoadingQuery.data) {
         if (dataLoadingQuery.data.is_loading) {
-            dataLoadingStatus = 'Loading...'
+            dataLoadingStatus = 'Loading data...'
         } else {
-            dataLoadingStatus = 'Complete'
+            dataLoadingStatus = 'Loading data complete'
         }
     }
 
