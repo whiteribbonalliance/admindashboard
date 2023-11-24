@@ -1,8 +1,24 @@
 import { IDataLoading, IDateFilter, IUser } from '@interfaces'
 import { TCampaignCode } from '@types'
 import { downloadCsvBlob, getCsvFileNameFromHeaders } from '@utils'
+import { CampaignCode } from '@enums'
 
 const apiUrl = process.env.NEXT_PUBLIC_WRA_DASHBOARD_API_URL
+const apiUrlPmnch = process.env.NEXT_PUBLIC_PMNCH_DASHBOARD_API_URL
+
+/**
+ * Get api url based on campaign code
+ */
+function getApiUrlByCampaignCode(campaignCode: TCampaignCode) {
+    let currentApiUrl: string
+    if (campaignCode === CampaignCode.WHAT_YOUNG_PEOPLE_WANT) {
+        currentApiUrl = apiUrlPmnch
+    } else {
+        currentApiUrl = apiUrl
+    }
+
+    return currentApiUrl
+}
 
 /**
  * Login user
@@ -60,6 +76,7 @@ export async function checkUser() {
  * @param dateFilter The date filter
  */
 export async function downloadCampaignData(campaignCode: TCampaignCode, dateFilter: IDateFilter | {}) {
+    const apiUrl = getApiUrlByCampaignCode(campaignCode)
     const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/data`, {
         method: 'POST',
         headers: {
@@ -89,6 +106,7 @@ export async function downloadCampaignData(campaignCode: TCampaignCode, dateFilt
  * @param campaignCode The campaign code
  */
 export async function downloadCampaignCountriesBreakdown(campaignCode: TCampaignCode) {
+    const apiUrl = getApiUrlByCampaignCode(campaignCode)
     const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/data/countries-breakdown`, {
         method: 'GET',
         credentials: 'include',
@@ -114,6 +132,7 @@ export async function downloadCampaignCountriesBreakdown(campaignCode: TCampaign
  * @param campaignCode The campaign code
  */
 export async function downloadCampaignSourceFilesBreakdown(campaignCode: TCampaignCode) {
+    const apiUrl = getApiUrlByCampaignCode(campaignCode)
     const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/data/source-files-breakdown`, {
         method: 'GET',
         credentials: 'include',
