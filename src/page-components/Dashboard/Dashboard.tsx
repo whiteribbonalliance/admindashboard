@@ -178,7 +178,14 @@ const DownloadCampaignData = ({ campaignCode, dataLoadingQuery }: ITabContentPro
 
     // On option change
     function onOptionChange(e: React.ChangeEvent<HTMLInputElement>) {
-        setSelectedOption(e.target.value)
+        const value = e.target.value
+
+        // Clear date filter
+        if (value === 'all') {
+            setDateFilter({})
+        }
+
+        setSelectedOption(value)
     }
 
     // Download function
