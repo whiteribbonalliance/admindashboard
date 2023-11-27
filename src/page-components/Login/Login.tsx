@@ -54,6 +54,7 @@ export const Login = () => {
             Cookies.set(CookieName.TOKEN_1, token1.access_token, {
                 secure: true,
                 expires: Math.floor(token1.max_age / 86400),
+                sameSite: 'lax'
             })
 
             // Set user
@@ -75,6 +76,7 @@ export const Login = () => {
                 Cookies.set(CookieName.TOKEN_2, token2.access_token, {
                     secure: true,
                     expires: Math.floor(token2.max_age / 86400),
+                    sameSite: 'lax'
                 })
             } catch (error) {}
         }

@@ -63,7 +63,7 @@ export async function loginUserAtWra(formData: FormData) {
  * @param formData The form data
  */
 export async function loginUserAtPmnch(formData: FormData) {
-    const apiUrl = getApiUrl()
+    const apiUrl = getApiUrl(CampaignCode.WHAT_YOUNG_PEOPLE_WANT)
     const response = await fetch(`${apiUrl}/auth/login`, {
         method: 'POST',
         body: formData,
