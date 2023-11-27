@@ -49,7 +49,9 @@ export const Dashboard = () => {
 
     // Data loading query
     const dataLoadingQuery = useQuery<IDataLoading>({
-        queryFn: getDataLoadingStatus,
+        queryFn: () => {
+            return getDataLoadingStatus()
+        },
         refetchInterval: 10000,
         refetchOnWindowFocus: true,
         refetchOnReconnect: true,

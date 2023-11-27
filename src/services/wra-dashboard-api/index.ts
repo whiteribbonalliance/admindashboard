@@ -1,63 +1,101 @@
-import { IDataLoading, IDateFilter, IUser } from '@interfaces'
+import { IDataLoading, IDateFilter, IToken, IUser } from '@interfaces'
 import { TCampaignCode } from '@types'
 import { downloadCsvBlob, getCsvFileNameFromHeaders } from '@utils'
-import { CampaignCode } from '@enums'
-
-const apiUrl = process.env.NEXT_PUBLIC_WRA_DASHBOARD_API_URL
-const apiUrlPmnch = process.env.NEXT_PUBLIC_PMNCH_DASHBOARD_API_URL
+import { CampaignCode, CookieName } from '@enums'
+import Cookies from 'js-cookie'
 
 /**
- * Get api url based on campaign code
+ * Get api url
+ *
+ * @param campaignCode The campaign code
  */
-function getApiUrlByCampaignCode(campaignCode: TCampaignCode) {
-    let currentApiUrl: string
+function getApiUrl(campaignCode?: TCampaignCode) {
+    let apiUrl: string
     if (campaignCode === CampaignCode.WHAT_YOUNG_PEOPLE_WANT) {
-        currentApiUrl = apiUrlPmnch
+        apiUrl = process.env.NEXT_PUBLIC_PMNCH_DASHBOARD_API_URL
     } else {
-        currentApiUrl = apiUrl
+        apiUrl = process.env.NEXT_PUBLIC_WRA_DASHBOARD_API_URL
     }
 
-    return currentApiUrl
+    return apiUrl
 }
 
 /**
- * Login user
+ * Get token
+ *
+ * @param campaignCode The campaign code
+ */
+function getToken(campaignCode?: TCampaignCode) {
+    let token: string
+    if (campaignCode === CampaignCode.WHAT_YOUNG_PEOPLE_WANT) {
+        token = Cookies.get(CookieName.TOKEN_2) ?? ''
+    } else {
+        token = Cookies.get(CookieName.TOKEN_1) ?? ''
+    }
+
+    return token
+}
+
+/**
+ * Login user at WRA
  *
  * @param formData The form data
  */
-export async function loginUser(formData: FormData) {
+export async function loginUserAtWra(formData: FormData) {
+    const apiUrl = getApiUrl()
     const response = await fetch(`${apiUrl}/auth/login`, {
         method: 'POST',
         body: formData,
-        credentials: 'include',
     })
 
     if (!response.ok) {
-        throw new Error('Failed to login user.')
+        throw new Error('Failed to login user at WRA.')
     }
 
-    const data: IUser = await response.json()
+    const data: IToken = await response.json()
 
     return data
 }
 
 /**
- * Logout user
+ * Login user at PMNCH
+ *
+ * @param formData The form data
  */
-export async function logoutUser() {
-    return await fetch(`${apiUrl}/auth/logout`, {
+export async function loginUserAtPmnch(formData: FormData) {
+    const apiUrl = getApiUrl()
+    const response = await fetch(`${apiUrl}/auth/login`, {
         method: 'POST',
-        credentials: 'include',
+        body: formData,
     })
+
+    if (!response.ok) {
+        throw new Error('Failed to login user at PMNCH.')
+    }
+
+    const data: IToken = await response.json()
+
+    return data
 }
+
+// /**
+//  * Logout user
+//  */
+// export async function logoutUser() {
+//     return await fetch(`${apiUrl}/auth/logout`, {
+//         method: 'POST',
+//     })
+// }
 
 /**
  * Check user
  */
 export async function checkUser() {
+    const apiUrl = getApiUrl()
+    const token = getToken()
     const response = await fetch(`${apiUrl}/auth/check`, {
         method: 'POST',
-        credentials: 'include',
+        headers: { Authorization: `Bearer ${token}` },
     })
 
     if (!response.ok) {
@@ -76,13 +114,14 @@ export async function checkUser() {
  * @param dateFilter The date filter
  */
 export async function downloadCampaignData(campaignCode: TCampaignCode, dateFilter: IDateFilter | {}) {
-    const apiUrl = getApiUrlByCampaignCode(campaignCode)
+    const apiUrl = getApiUrl(campaignCode)
+    const token = getToken(campaignCode)
     const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/data`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
         },
-        credentials: 'include',
         body: JSON.stringify(dateFilter),
     })
 
@@ -106,10 +145,13 @@ export async function downloadCampaignData(campaignCode: TCampaignCode, dateFilt
  * @param campaignCode The campaign code
  */
 export async function downloadCampaignCountriesBreakdown(campaignCode: TCampaignCode) {
-    const apiUrl = getApiUrlByCampaignCode(campaignCode)
+    const apiUrl = getApiUrl(campaignCode)
+    const token = getToken(campaignCode)
     const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/data/countries-breakdown`, {
         method: 'GET',
-        credentials: 'include',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
     })
 
     if (!response.ok) {
@@ -132,10 +174,13 @@ export async function downloadCampaignCountriesBreakdown(campaignCode: TCampaign
  * @param campaignCode The campaign code
  */
 export async function downloadCampaignSourceFilesBreakdown(campaignCode: TCampaignCode) {
-    const apiUrl = getApiUrlByCampaignCode(campaignCode)
+    const apiUrl = getApiUrl(campaignCode)
+    const token = getToken(campaignCode)
     const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/data/source-files-breakdown`, {
         method: 'GET',
-        credentials: 'include',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
     })
 
     if (!response.ok) {
@@ -156,9 +201,13 @@ export async function downloadCampaignSourceFilesBreakdown(campaignCode: TCampai
  * Get data loading status
  */
 export async function getDataLoadingStatus() {
+    const apiUrl = getApiUrl()
+    const token = getToken()
     const response = await fetch(`${apiUrl}/data/loading-status`, {
         method: 'GET',
-        credentials: 'include',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
     })
 
     if (!response.ok) {
@@ -174,9 +223,13 @@ export async function getDataLoadingStatus() {
  * Reload data
  */
 export async function reloadData() {
+    const apiUrl = getApiUrl()
+    const token = getToken()
     const response = await fetch(`${apiUrl}/data/reload`, {
         method: 'POST',
-        credentials: 'include',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
     })
 
     if (!response.ok) {

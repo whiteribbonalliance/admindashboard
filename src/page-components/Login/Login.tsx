@@ -6,11 +6,13 @@ import { Control, Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { loginFormSchema, TLoginForm } from '@schemas/login-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@components/Button'
-import { loginUser } from '@services/wra-dashboard-api'
+import { loginUserAtPmnch, loginUserAtWra } from '@services/wra-dashboard-api'
 import { useRouter } from 'next/navigation'
 import { useUserStore } from '@stores/user'
 import { useState } from 'react'
-import { Path } from '@enums'
+import { CookieName, Path } from '@enums'
+import Cookies from 'js-cookie'
+import { getUserFromJWT } from '@utils'
 
 interface IInputProps {
     id: string
@@ -38,13 +40,47 @@ export const Login = () => {
         formData.append('username', data.username)
         formData.append('password', data.password)
 
+        // Login at WRA
+        // User authentication checks to keep login state of app will be done at the WRA API
+        let loginWraSuccess = false
         try {
-            const user = await loginUser(formData)
+            // Get token
+            const token1 = await loginUserAtWra(formData)
+
+            // Get user
+            const user = getUserFromJWT(token1.access_token)
+
+            // Set cookie
+            Cookies.set(CookieName.TOKEN_1, token1.access_token, {
+                secure: true,
+            })
+
+            // Set user
             setUser(user)
-            setLoginError('')
-            router.push(Path.DASHBOARD)
+
+            loginWraSuccess = true
         } catch (error) {
             setLoginError('Login failed')
+        }
+
+        // Login at PMNCH
+        // For communicating with the PMNCH API
+        if (data.username === 'admin' || data.username === 'whatyoungpeoplewant') {
+            try {
+                // Get token
+                const token2 = await loginUserAtPmnch(formData)
+
+                // Set cookie
+                Cookies.set(CookieName.TOKEN_2, token2.access_token, {
+                    secure: true,
+                })
+            } catch (error) {}
+        }
+
+        // On login WRA success
+        if (loginWraSuccess) {
+            setLoginError('')
+            router.push(Path.DASHBOARD)
         }
     }
 

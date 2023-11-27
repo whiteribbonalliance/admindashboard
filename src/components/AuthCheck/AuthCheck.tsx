@@ -1,10 +1,12 @@
 'use client'
 
 import { ReactNode, useEffect, useState } from 'react'
-import { checkUser, logoutUser } from '@services/wra-dashboard-api'
+import { checkUser } from '@services/wra-dashboard-api'
 import { usePathname, useRouter } from 'next/navigation'
 import { useUserStore } from '@stores/user'
-import { Path } from '@enums'
+import { CookieName, Path } from '@enums'
+import Cookies from 'js-cookie'
+import { getUserFromJWT } from '@utils'
 
 interface IAuthProps {
     children: ReactNode
@@ -20,6 +22,7 @@ export const AuthCheck = ({ children }: IAuthProps) => {
     const [showPageContent, setShowPageContent] = useState<boolean>(false)
     const pathname = usePathname()
     const router = useRouter()
+    const token1 = Cookies.get(CookieName.TOKEN_1) ?? ''
 
     // Do auth check
     // If auth check succeeds, user object is set
@@ -29,8 +32,10 @@ export const AuthCheck = ({ children }: IAuthProps) => {
             setAuthCheckSuccess(undefined)
 
             try {
+                await checkUser()
+
                 // Get user
-                const user = await checkUser()
+                const user = getUserFromJWT(token1)
 
                 // Set user
                 setUser(user)
@@ -41,7 +46,8 @@ export const AuthCheck = ({ children }: IAuthProps) => {
                 // Remove user
                 if (isLoggedIn) {
                     try {
-                        await logoutUser()
+                        Cookies.remove(CookieName.TOKEN_1)
+                        Cookies.remove(CookieName.TOKEN_2)
                     } catch (error) {}
                     setUser(undefined)
                 }
@@ -50,7 +56,7 @@ export const AuthCheck = ({ children }: IAuthProps) => {
                 setAuthCheckSuccess(false)
             }
         })()
-    }, [pathname, isLoggedIn, setUser])
+    }, [pathname, isLoggedIn, setUser, token1])
 
     // Check if page content can be shown
     // Or else redirect to another page

@@ -1,4 +1,4 @@
-import {CampaignCode} from '@enums'
+import { CampaignCode } from '@enums'
 import {
     economicEmpowermentMexicoConfig,
     healthwellbeingConfig,
@@ -7,8 +7,10 @@ import {
     whatWomenWantPakistanConfig,
     whatYoungPeopleWantConfig,
 } from '@configurations'
-import {TCampaignCode} from '@types'
-import {v4 as uuidv4} from 'uuid'
+import { TCampaignCode } from '@types'
+import { v4 as uuidv4 } from 'uuid'
+import { jwtDecode } from 'jwt-decode'
+import { IUser } from '@interfaces'
 
 /**
  * Merge Tailwind CSS classes
@@ -71,4 +73,16 @@ export function downloadCsvBlob(blob: Blob, filename: string) {
     const url = URL.createObjectURL(file)
     window.open(url, '_blank')
     URL.revokeObjectURL(url)
+}
+
+/**
+ * Get user from JWT token
+ *
+ * @param token The token
+ */
+export function getUserFromJWT(token: string) {
+    try {
+        const decoded = jwtDecode<{ user: IUser }>(token)
+        return decoded.user
+    } catch (error) {}
 }
