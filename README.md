@@ -3,8 +3,8 @@
 This project allows a user to login and download data related to a campaign. For each campaign there exists a user
 that has access to the data of the campaign. The user `admin` has access to all campaign data.
 
-Authentication is kept simple. When login succeeds, the back-end returns a `httpOnly` cookie that contains an access
-token to validate the user when making requests to the back-end. This token shall be valid for ~30 days.
+Authentication is kept simple. When login succeeds, the back-end returns an access token to validate the user when
+making requests to the back-end. This token shall be valid for ~30 days.
 
 The following main functionalities are included:
 

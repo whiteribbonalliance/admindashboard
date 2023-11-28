@@ -178,14 +178,7 @@ const DownloadCampaignData = ({ campaignCode, dataLoadingQuery }: ITabContentPro
 
     // On option change
     function onOptionChange(e: React.ChangeEvent<HTMLInputElement>) {
-        const value = e.target.value
-
-        // Clear date filter
-        if (value === 'all') {
-            setDateFilter({})
-        }
-
-        setSelectedOption(value)
+        setSelectedOption(e.target.value)
     }
 
     // Download function
@@ -194,7 +187,7 @@ const DownloadCampaignData = ({ campaignCode, dataLoadingQuery }: ITabContentPro
             // Get url
             setIsGeneratingData(true)
             setNoDataFound(false)
-            await downloadCampaignData(campaignCode, dateFilter)
+            await downloadCampaignData(campaignCode, selectedOption === 'date-range' ? dateFilter : {})
             setIsGeneratingData(false)
         } catch (error) {
             setIsGeneratingData(false)

@@ -32,6 +32,7 @@ export const AuthCheck = ({ children }: IAuthProps) => {
             setAuthCheckSuccess(undefined)
 
             try {
+                // Check
                 await checkUser()
 
                 // Get user
@@ -45,10 +46,8 @@ export const AuthCheck = ({ children }: IAuthProps) => {
             } catch (error) {
                 // Remove user
                 if (isLoggedIn) {
-                    try {
-                        Cookies.remove(CookieName.TOKEN_1)
-                        Cookies.remove(CookieName.TOKEN_2)
-                    } catch (error) {}
+                    Cookies.remove(CookieName.TOKEN_1)
+                    Cookies.remove(CookieName.TOKEN_2)
                     setUser(undefined)
                 }
 
@@ -63,7 +62,7 @@ export const AuthCheck = ({ children }: IAuthProps) => {
     useEffect(() => {
         if (authCheckSuccess === undefined) return
 
-        // Public paths can be shown
+        // Public paths can always be shown
         if (publicPaths.includes(pathname)) {
             setShowPageContent(true)
             return

@@ -41,7 +41,7 @@ export const Login = () => {
         formData.append('password', data.password)
 
         // Login at WRA
-        // User authentication checks to keep login state of app will be done at the WRA API
+        // Auth check to keep login state of app will be done at the WRA API (see AuthCheck.tsx)
         let loginWraSuccess = false
         try {
             // Get token
