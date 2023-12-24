@@ -52,7 +52,7 @@ export const Dashboard = () => {
         queryFn: () => {
             return getDataLoadingStatus()
         },
-        refetchInterval: 10000,
+        refetchInterval: 5000,
         refetchOnWindowFocus: true,
         refetchOnReconnect: true,
     })

@@ -67,7 +67,7 @@ export const Login = () => {
 
         // Login at PMNCH
         // For communicating with the PMNCH API
-        if (loginWraSuccess && (data.username === 'admin' || data.username === 'whatyoungpeoplewant')) {
+        if (loginWraSuccess && (data.username === 'admin' || data.username === 'pmn01a')) {
             try {
                 // Get token
                 const token2 = await loginUserAtPmnch(formData)

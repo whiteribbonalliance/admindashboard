@@ -202,12 +202,8 @@ export async function downloadCampaignSourceFilesBreakdown(campaignCode: TCampai
  */
 export async function getDataLoadingStatus() {
     const apiUrl = getApiUrl()
-    const token = getToken()
     const response = await fetch(`${apiUrl}/data/loading-status`, {
         method: 'GET',
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
     })
 
     if (!response.ok) {
