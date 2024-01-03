@@ -1,6 +1,6 @@
 # Admin Dashboard
 
-Admin dashboard for downloading data of a campaign.
+Admin dashboard for downloading campaigns data to a CSV file format.
 
 Login using the campaign code as username and the password set for the campaign as an environment variable in the
 back-end. Check the `Environment variables` section in the back-end repo.
