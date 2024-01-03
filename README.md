@@ -92,7 +92,7 @@ Add the following environment variables to `Repository secrets` in GitHub:
 
 - `AZURE_WEBAPP_PUBLISH_PROFILE=` The publish profile of your web app.
 - `AZURE_WEBAPP_NAME=` The web app name.
-- `NEXT_PUBLIC_DASHBOARD_API_URL=` The url to What Women Want Dashboard API.
+- `NEXT_PUBLIC_DASHBOARD_API_URL=` The url to the Dashboard API.
 
 At `Configurations` -> `General settings` -> `Startup command` add `node server.js`.
 
