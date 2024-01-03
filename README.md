@@ -3,7 +3,7 @@
 Admin dashboard for downloading data of a campaign.
 
 Login using the campaign code as username and the password set for the campaign as an environment variable in the
-back-end. Check the `Environment variables`section in the back-end repo.
+back-end. Check the `Environment variables` section in the back-end repo.
 
 It is also required to configure the environment variables for either `Google` or `Azure` in the back-end.
 
