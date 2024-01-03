@@ -16,9 +16,9 @@ This token is valid for ~30 days.
 The following functionalities are included:
 
 - Download all campaign data.
-- Download campaign data between dates (requires the field `ingestion_time` in the CSV file).
+- Download campaign data between dates (requires the field `ingestion_time` in the CSV file used in the back-end).
 - Download campaign countries breakdown.
-- Download campaign source files breakdown (requires the field `data_source` in the CSV file).
+- Download campaign source files breakdown (requires the field `data_source` in the CSV file used in the back-end).
 
 ## Environment variables
 
