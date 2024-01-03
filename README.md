@@ -1,9 +1,11 @@
 # Admin Dashboard
 
-Admin dashboard for downloading data related to a campaign. To login, the username is the campaign code, the password
-is the password set for the campaign as an environment variable in the back-end. Check the `Environment variables`
-section in the back-end repo. To use the admin functionalities it is also required to configure the environment
-variables for either `Google` or `Azure` in the back-end.
+Admin dashboard for downloading data of a campaign.
+
+Login using the campaign code as username and the password set for the campaign as an environment variable in the
+back-end. Check the `Environment variables`section in the back-end repo.
+
+It is also required to configure the environment variables for either `Google` or `Azure` in the back-end.
 
 The username `admin` has access to all campaigns data, to enable the admin you must set the environment
 variable `ADMIN_PASSWORD` in the back-end.
