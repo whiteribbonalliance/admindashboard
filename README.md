@@ -99,6 +99,12 @@ At `Configurations` -> `General settings` -> `Startup command` add `node server.
 The GitHub action at `.github/workflows/prod-deploy-azure-webapps.yaml` will trigger a deployment to Azure Web
 App on push or merge.
 
+## Workflows
+
+In each repository there's two workflows (To deploy to `Google` or `Azure`), make sure to only enable the correct
+workflow in
+the repository on GitHub: `https://docs.github.com/en/actions/using-workflows/disabling-and-enabling-a-workflow`.
+
 ## Legacy campaigns
 
 This section can be ignored as it details some information of dashboards used with this project originally.
