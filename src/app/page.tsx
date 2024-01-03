@@ -24,4 +24,6 @@ SOFTWARE.
 
 import { DashboardPage } from 'page-components/DashboardPage/DashboardPage'
 
+export const dynamic = 'force-dynamic'
+
 export default DashboardPage

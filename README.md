@@ -112,3 +112,7 @@ This section can be ignored as it details some information of dashboards used wi
 Additional environment variables:
 
 - `NEXT_PUBLIC_PMNCH_DASHBOARD_API_URL=` The url to the PMNCH Dashboard API.
+
+## License
+
+MIT License.
