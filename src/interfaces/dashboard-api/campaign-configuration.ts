@@ -22,8 +22,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@import 'react-datepicker/dist/react-datepicker.css';
+export interface ICampaignConfiguration {
+    campaign_code: string
+    dashboard_path: string
+    campaign_title: string
+    campaign_subtext: string
+    site_title: string
+    site_description: string
+    respondent_noun_singular: string
+    respondent_noun_plural: string
+    video_url: string
+    about_us_url: string
+    dashboard_url: string
+}

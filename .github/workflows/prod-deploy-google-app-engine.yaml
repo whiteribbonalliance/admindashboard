@@ -1,0 +1,52 @@
+name: "Prod: Google App Engine - Build and deploy admin dashboard"
+
+on:
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - '**/README.md'
+  pull_request:
+    branches: [ "main" ]
+    paths-ignore:
+      - '**/README.md'
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    name: Build container image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set env variables to app.yaml
+        uses: ./.github/actions/app-yaml-replace-env-variables
+        env:
+          # These env variables can be ignored (only for deployment of legacy campaigns)
+          NEXT_PUBLIC_PMNCH_DASHBOARD_API_URL: ${{ secrets.NEXT_PUBLIC_PMNCH_DASHBOARD_API_URL }}
+
+          # Required
+          NEXT_PUBLIC_DASHBOARD_API_URL: ${{ secrets.NEXT_PUBLIC_DASHBOARD_API_URL }}
+        with:
+          app_yaml_path: "app.yaml"
+
+      - name: Setup Google Cloud CLI
+        id: 'auth'
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GOOGLE_CREDENTIALS_JSON_B64 }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT }}
+          project_id: ${{ secrets.PROJECT_ID }}
+          export_default_credentials: true
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+        with:
+          version: '>= 363.0.0'
+
+      - name: 'Use gcloud CLI'
+        run: 'gcloud info'
+
+      - name: Deploy
+        run: npm run deploy

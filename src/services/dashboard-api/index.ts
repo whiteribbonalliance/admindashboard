@@ -1,7 +1,30 @@
-import { IDataLoading, IDateFilter, IToken, IUser } from '@interfaces'
-import { TCampaignCode } from '@types'
+/*
+MIT License
+
+Copyright (c) 2023 White Ribbon Alliance. Maintainers: Thomas Wood, https://fastdatascience.com, Zairon Jacobs, https://zaironjacobs.com.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+import { ICampaignConfiguration, IDataLoading, IDateFilter, IToken, IUser } from '@interfaces'
 import { downloadCsvBlob, getCsvFileNameFromHeaders } from '@utils'
-import { CampaignCode, CookieName } from '@enums'
+import { CookieName } from '@enums'
 import Cookies from 'js-cookie'
 
 /**
@@ -9,12 +32,12 @@ import Cookies from 'js-cookie'
  *
  * @param campaignCode The campaign code
  */
-function getApiUrl(campaignCode?: TCampaignCode) {
+function getApiUrl(campaignCode?: string) {
     let apiUrl: string
-    if (campaignCode === CampaignCode.WHAT_YOUNG_PEOPLE_WANT) {
+    if (process.env.NEXT_PUBLIC_PMNCH_DASHBOARD_API_URL && campaignCode === 'pmn01a') {
         apiUrl = process.env.NEXT_PUBLIC_PMNCH_DASHBOARD_API_URL
     } else {
-        apiUrl = process.env.NEXT_PUBLIC_WRA_DASHBOARD_API_URL
+        apiUrl = process.env.NEXT_PUBLIC_DASHBOARD_API_URL
     }
 
     return apiUrl
@@ -25,9 +48,9 @@ function getApiUrl(campaignCode?: TCampaignCode) {
  *
  * @param campaignCode The campaign code
  */
-function getToken(campaignCode?: TCampaignCode) {
+function getToken(campaignCode?: string) {
     let token: string
-    if (campaignCode === CampaignCode.WHAT_YOUNG_PEOPLE_WANT) {
+    if (process.env.NEXT_PUBLIC_PMNCH_DASHBOARD_API_URL && campaignCode === 'pmn01a') {
         token = Cookies.get(CookieName.TOKEN_2) ?? ''
     } else {
         token = Cookies.get(CookieName.TOKEN_1) ?? ''
@@ -37,11 +60,11 @@ function getToken(campaignCode?: TCampaignCode) {
 }
 
 /**
- * Login user at WRA
+ * Login user
  *
  * @param formData The form data
  */
-export async function loginUserAtWra(formData: FormData) {
+export async function loginUser(formData: FormData) {
     const apiUrl = getApiUrl()
     const response = await fetch(`${apiUrl}/auth/login`, {
         method: 'POST',
@@ -49,7 +72,7 @@ export async function loginUserAtWra(formData: FormData) {
     })
 
     if (!response.ok) {
-        throw new Error('Failed to login user at WRA.')
+        throw new Error('Failed to login user.')
     }
 
     const data: IToken = await response.json()
@@ -63,7 +86,7 @@ export async function loginUserAtWra(formData: FormData) {
  * @param formData The form data
  */
 export async function loginUserAtPmnch(formData: FormData) {
-    const apiUrl = getApiUrl(CampaignCode.WHAT_YOUNG_PEOPLE_WANT)
+    const apiUrl = getApiUrl('pmn01a')
     const response = await fetch(`${apiUrl}/auth/login`, {
         method: 'POST',
         body: formData,
@@ -77,15 +100,6 @@ export async function loginUserAtPmnch(formData: FormData) {
 
     return data
 }
-
-// /**
-//  * Logout user
-//  */
-// export async function logoutUser() {
-//     return await fetch(`${apiUrl}/auth/logout`, {
-//         method: 'POST',
-//     })
-// }
 
 /**
  * Check user
@@ -113,7 +127,7 @@ export async function checkUser() {
  * @param campaignCode The campaign code
  * @param dateFilter The date filter
  */
-export async function downloadCampaignData(campaignCode: TCampaignCode, dateFilter: IDateFilter | {}) {
+export async function downloadCampaignData(campaignCode: string, dateFilter: IDateFilter | {}) {
     const apiUrl = getApiUrl(campaignCode)
     const token = getToken(campaignCode)
     const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/data`, {
@@ -144,7 +158,7 @@ export async function downloadCampaignData(campaignCode: TCampaignCode, dateFilt
  *
  * @param campaignCode The campaign code
  */
-export async function downloadCampaignCountriesBreakdown(campaignCode: TCampaignCode) {
+export async function downloadCampaignCountriesBreakdown(campaignCode: string) {
     const apiUrl = getApiUrl(campaignCode)
     const token = getToken(campaignCode)
     const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/data/countries-breakdown`, {
@@ -173,7 +187,7 @@ export async function downloadCampaignCountriesBreakdown(campaignCode: TCampaign
  *
  * @param campaignCode The campaign code
  */
-export async function downloadCampaignSourceFilesBreakdown(campaignCode: TCampaignCode) {
+export async function downloadCampaignSourceFilesBreakdown(campaignCode: string) {
     const apiUrl = getApiUrl(campaignCode)
     const token = getToken(campaignCode)
     const response = await fetch(`${apiUrl}/campaigns/${campaignCode}/data/source-files-breakdown`, {
@@ -231,4 +245,23 @@ export async function reloadData() {
     if (!response.ok) {
         throw new Error('Failed to reload data.')
     }
+}
+
+/**
+ * Get campaigns configurations.
+ */
+export async function getCampaignsConfigurations() {
+    const apiUrl = getApiUrl()
+    const response = await fetch(`${apiUrl}/configurations`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+    })
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch campaigns configurations.')
+    }
+
+    const data: ICampaignConfiguration[] = await response.json()
+
+    return data
 }

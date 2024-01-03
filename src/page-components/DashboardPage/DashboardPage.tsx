@@ -22,8 +22,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+import { ICampaignConfiguration } from '@interfaces'
+import { getCampaignsConfigurations } from '@services/dashboard-api'
+import { Dashboard } from '@page-components/DashboardPage/Dashboard'
 
-@import 'react-datepicker/dist/react-datepicker.css';
+export const DashboardPage = async () => {
+    // Get campaigns configurations
+    let campaignsConfigurations: ICampaignConfiguration[]
+    try {
+        campaignsConfigurations = await getCampaignsConfigurations()
+    } catch (error) {
+        campaignsConfigurations = []
+    }
+
+    return <Dashboard campaignsConfigurations={campaignsConfigurations} />
+}

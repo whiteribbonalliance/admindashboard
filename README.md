@@ -1,37 +1,49 @@
-# WRA Admin Dashboard
+# Admin Dashboard
 
-This project allows a user to login and download data related to a campaign. For each campaign there exists a user
-that has access to the data of the campaign. The user `admin` has access to all campaign data.
+Admin dashboard for downloading data related to a campaign. To login, the username is the campaign code, the password
+is the password set for the campaign as an environment variable in the back-end. Check the `Environment variables`
+section in the back-end repo. To use the admin functionalities it is also required to configure the environment
+variables for either `Google` or `Azure` in the back-end.
 
-Authentication is kept simple. When login succeeds, the back-end returns an access token to validate the user when
-making requests to the back-end. This token shall be valid for ~30 days.
+The username `admin` has access to all campaigns data, to enable the admin you must set the environment
+variable `ADMIN_PASSWORD` in the back-end.
 
-The following main functionalities are included:
+When login succeeds, the back-end returns an access token to validate the user when making requests to the back-end.
+This token is valid for ~30 days.
 
-- Download all campaign data
-- Download campaign data between dates
-- Download campaign countries breakdown
-- Download campaign source files breakdown
+The following functionalities are included:
 
-## Development
+- Download all campaign data.
+- Download campaign data between dates.
+- Download campaign countries breakdown.
+- Download campaign source files breakdown.
 
-### Install
+## Environment variables
 
-Configure .env.local.
+### Required:
 
-- `NEXT_PUBLIC_WRA_DASHBOARD_API_URL=` The url to What Women Want Dashboard API.
+- `NEXT_PUBLIC_DASHBOARD_API_URL=` The url to the Dashboard API.
+
+## System requirements
+
+- Node.js 18 or above.
+
+## Install
+
+Configure `.env.local.` with the environment variables.
+
+Then:
 
 ```bash
 npm install
+npm run build
 ```
 
 ### Run
 
 ```bash
-npm run dev
+npm run start
 ```
-
-On the local machine visit `http://localhost:3000`.
 
 ### Lint project
 
@@ -44,3 +56,53 @@ npm run lint
 ```bash
 npm run format
 ```
+
+## Deployment to Google App Engine
+
+Add the required environment variables to `Repository secrets` in GitHub. Add optional
+environment variables if needed. These variables will be loaded into `app.yaml`.
+
+Inside `app.yaml` change `service` to your service name on App Engine.
+
+For deployment, it is also required to add the following environment variables to `Repository secrets`:
+
+- `SERVICE_NAME=` The service name in App Engine.
+- `GOOGLE_CREDENTIALS_JSON_B64=` Content of credentials.json file in `Base64` format.
+- `SERVICE_ACCOUNT=` The Google Cloud service account.
+- `PROJECT_ID=` The Google Cloud project id.
+
+Add/Modify `resources` in `app.yaml` as needed.
+
+The GitHub action at `.github/workflows/prod-deploy-google-app-engine.yaml` will trigger a deployment to Google App
+Engine on push or merge.
+
+This script builds a Docker image and pushes to Google Container Registry and then deploys. In the future we may change
+to a direct Dockerless deployment which would use `app.yaml`. No authentication is needed because authentication is
+provided via the Google App Engine service account, whose credentials are stored in the GitHub
+secret `GOOGLE_CREDENTIALS_JSON_B64` (to change this, go to the GitHub web interface and got o Settings -> Secrets and
+variables -> Actions. You will need to be an administrator on the GitHub repo to modify these credentials).
+
+There is also a manual Google App Engine deployment file set up in `app.yaml`. You can deploy manually from the command
+line using `gcloud app deploy app.yaml` (you must directly include the env variables in `app.yaml`). You need to install
+Google Cloud CLI (Command Line Interface) and be authenticated on the Google Cloud Platform service account.
+
+## Deployment to Azure Web Apps
+
+Add the following environment variables to `Repository secrets` in GitHub:
+
+- `AZURE_WEBAPP_PUBLISH_PROFILE=` The publish profile of your web app.
+- `AZURE_WEBAPP_NAME=` The web app name.
+- `NEXT_PUBLIC_DASHBOARD_API_URL=` The url to What Women Want Dashboard API.
+
+At `Configurations` -> `General settings` -> `Startup command` add `node server.js`.
+
+The GitHub action at `.github/workflows/prod-deploy-azure-webapps.yaml` will trigger a deployment to Azure Web
+App on push or merge.
+
+## Legacy campaigns
+
+This section can be ignored as it details some information of dashboards used with this project originally.
+
+Additional environment variables:
+
+- `NEXT_PUBLIC_PMNCH_DASHBOARD_API_URL=` The url to the PMNCH Dashboard API.

@@ -12,6 +12,10 @@ handlers:
     script: auto
 
 # Environment variables that need to be exposed to the client (with NEXT_PUBLIC_) should be added at build time
+# For manual deployment, replace the variables starting with $ with your own values
 build_env_variables:
-  NEXT_PUBLIC_WRA_DASHBOARD_API_URL: "https://api.whiteribbonalliance.org/api/v1"
-  NEXT_PUBLIC_PMNCH_DASHBOARD_API_URL: "https://pmnch-api.azurewebsites.net/api/v1"
+  # Required
+  NEXT_PUBLIC_DASHBOARD_API_URL: $NEXT_PUBLIC_DASHBOARD_API_URL
+
+  # These env variables can be ignored
+  NEXT_PUBLIC_PMNCH_DASHBOARD_API_URL: $NEXT_PUBLIC_PMNCH_DASHBOARD_API_URL

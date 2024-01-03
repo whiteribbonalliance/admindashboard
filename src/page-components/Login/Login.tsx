@@ -1,3 +1,27 @@
+/*
+MIT License
+
+Copyright (c) 2023 White Ribbon Alliance. Maintainers: Thomas Wood, https://fastdatascience.com, Zairon Jacobs, https://zaironjacobs.com.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 'use client'
 
 import { Box } from '@components/Box'
@@ -6,13 +30,14 @@ import { Control, Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { loginFormSchema, TLoginForm } from '@schemas/login-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@components/Button'
-import { loginUserAtPmnch, loginUserAtWra } from '@services/wra-dashboard-api'
+import { loginUserAtPmnch, loginUser } from 'services/dashboard-api'
 import { useRouter } from 'next/navigation'
 import { useUserStore } from '@stores/user'
 import { useState } from 'react'
 import { CookieName, Path } from '@enums'
 import Cookies from 'js-cookie'
 import { getUserFromJWT } from '@utils'
+import * as process from 'process'
 
 interface IInputProps {
     id: string
@@ -40,12 +65,12 @@ export const Login = () => {
         formData.append('username', data.username)
         formData.append('password', data.password)
 
-        // Login at WRA
-        // Auth check to keep login state of app will be done at the WRA API (see AuthCheck.tsx)
-        let loginWraSuccess = false
+        // Login
+        // Auth check to keep login state of app will be done at the API (see AuthCheck.tsx)
+        let loginSuccess = false
         try {
             // Get token
-            const token1 = await loginUserAtWra(formData)
+            const token1 = await loginUser(formData)
 
             // Get user
             const user = getUserFromJWT(token1.access_token)
@@ -60,29 +85,31 @@ export const Login = () => {
             // Set user
             setUser(user)
 
-            loginWraSuccess = true
+            loginSuccess = true
         } catch (error) {
             setLoginError('Login failed')
         }
 
         // Login at PMNCH
         // For communicating with the PMNCH API
-        if (loginWraSuccess && (data.username === 'admin' || data.username === 'pmn01a')) {
-            try {
-                // Get token
-                const token2 = await loginUserAtPmnch(formData)
+        if (process.env.NEXT_PUBLIC_PMNCH_DASHBOARD_API_URL) {
+            if (loginSuccess && (data.username === 'admin' || data.username === 'pmn01a')) {
+                try {
+                    // Get token
+                    const token2 = await loginUserAtPmnch(formData)
 
-                // Set cookie
-                Cookies.set(CookieName.TOKEN_2, token2.access_token, {
-                    secure: true,
-                    expires: Math.floor(token2.max_age / 86400),
-                    sameSite: 'lax',
-                })
-            } catch (error) {}
+                    // Set cookie
+                    Cookies.set(CookieName.TOKEN_2, token2.access_token, {
+                        secure: true,
+                        expires: Math.floor(token2.max_age / 86400),
+                        sameSite: 'lax',
+                    })
+                } catch (error) {}
+            }
         }
 
-        // On login WRA success
-        if (loginWraSuccess) {
+        // On login success
+        if (loginSuccess) {
             setLoginError('')
             router.push(Path.DASHBOARD)
         }

@@ -1,6 +1,0 @@
-export { configuration as whatWomenWantConfig } from './what-women-want'
-export { configuration as whatYoungPeopleWantConfig } from './what-young-people-want'
-export { configuration as midwivesVoicesConfig } from './midwives-voices'
-export { configuration as healthwellbeingConfig } from './healthwellbeing'
-export { configuration as economicEmpowermentMexicoConfig } from './economic-empowerment-mexico'
-export { configuration as whatWomenWantPakistanConfig } from './what-women-want-pakistan'

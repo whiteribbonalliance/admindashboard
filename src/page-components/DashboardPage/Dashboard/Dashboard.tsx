@@ -1,10 +1,33 @@
+/*
+MIT License
+
+Copyright (c) 2023 White Ribbon Alliance. Maintainers: Thomas Wood, https://fastdatascience.com, Zairon Jacobs, https://zaironjacobs.com.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 'use client'
 
 import { Box } from '@components/Box'
 import { useUserStore } from '@stores/user'
-import { classNames, getCampaignConfig } from '@utils'
+import { classNames } from '@utils'
 import { Button } from '@components/Button'
-import { TCampaignCode } from '@types'
 import React, { useEffect, useState } from 'react'
 import {
     downloadCampaignCountriesBreakdown,
@@ -12,21 +35,20 @@ import {
     downloadCampaignSourceFilesBreakdown,
     getDataLoadingStatus,
     reloadData,
-} from '@services/wra-dashboard-api'
-import { IConfiguration, IDataLoading, IDateFilter } from '@interfaces'
+} from '@services/dashboard-api'
+import { ICampaignConfiguration, IDataLoading, IDateFilter } from '@interfaces'
 import { Tab } from '@headlessui/react'
 import DatePicker from 'react-datepicker'
-import { CampaignCode } from '@enums'
 import { useQuery, UseQueryResult } from 'react-query'
 
 interface ITabContentProps {
-    campaignCode: TCampaignCode
+    campaignCode: string
     dataLoadingQuery?: UseQueryResult<IDataLoading>
 }
 
 interface IDataDownloaderProps {
-    campaignCode: TCampaignCode
-    campaignConfig: IConfiguration
+    campaignCode: string
+    campaignConfig: ICampaignConfiguration
     dataLoadingQuery?: UseQueryResult<IDataLoading>
 }
 
@@ -41,11 +63,15 @@ interface IDataLoaderProps {
     dataLoadingQuery: UseQueryResult<IDataLoading>
 }
 
-export const Dashboard = () => {
+interface IDashboardProps {
+    campaignsConfigurations: ICampaignConfiguration[]
+}
+
+export const Dashboard = ({ campaignsConfigurations }: IDashboardProps) => {
     const user = useUserStore((state) => state.user)
-    let userCampaignCodes = user ? user?.campaign_access : []
+    const campaignCodesAvailable: string[] = []
+    const userCampaignCodes = user ? user?.campaign_access : []
     const isAdmin = user ? user.is_admin : false
-    const campaignCodes: TCampaignCode[] = []
 
     // Data loading query
     const dataLoadingQuery = useQuery<IDataLoading>({
@@ -57,10 +83,10 @@ export const Dashboard = () => {
         refetchOnReconnect: true,
     })
 
-    // Check if campaign code from user exists
+    // Only allow campaign codes from the user
     for (const campaignCode of userCampaignCodes) {
-        if (Object.values(CampaignCode).includes(campaignCode)) {
-            campaignCodes.push(campaignCode)
+        if (campaignsConfigurations.map((c) => c.campaign_code).includes(campaignCode)) {
+            campaignCodesAvailable.push(campaignCode)
         }
     }
 
@@ -84,9 +110,11 @@ export const Dashboard = () => {
                 {/* Data downloader per campaign */}
                 <div className="flex flex-col items-center">
                     <div className="flex w-full flex-col items-center gap-y-10">
-                        {campaignCodes.length > 0 &&
-                            campaignCodes.map((campaignCode) => {
-                                const campaignConfig = getCampaignConfig(campaignCode)
+                        {campaignCodesAvailable.length > 0 &&
+                            campaignCodesAvailable.map((campaignCode) => {
+                                const campaignConfig = campaignsConfigurations.find(
+                                    (c) => c.campaign_code === campaignCode
+                                )
                                 if (!campaignConfig) return null
                                 return (
                                     <DataDownloader
@@ -126,7 +154,7 @@ const DataDownloader = ({ campaignCode, campaignConfig, dataLoadingQuery }: IDat
 
     return (
         <div className="w-full max-w-5xl">
-            <div className="mb-2 text-xl font-bold">{campaignConfig.title}</div>
+            <div className="mb-2 text-xl font-bold">{campaignConfig.campaign_title}</div>
             <div>
                 <Box>
                     <div className="flex flex-col gap-y-3">
